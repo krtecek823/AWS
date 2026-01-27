@@ -174,6 +174,80 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
             천천히, 편안하게 사용하세요
           </p>
         </div>
+
+        {/* 오늘의 건강 정보 섹션 */}
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 px-2">치매 예방 건강 정보</h3>
+          <div className="space-y-3 max-h-48 overflow-y-auto">
+            {/* 기사 1 - 치매 예방 운동 */}
+            <a 
+              href="https://www.hidoc.co.kr/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 hover:shadow-md transition-all"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-1">규칙적인 운동으로 치매 예방하기</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed">주 3회 이상 30분 운동으로 뇌 혈류량 증가, 인지기능 향상에 도움</p>
+                  <p className="text-xs text-blue-600 mt-1">하이닥 건강정보</p>
+                </div>
+              </div>
+            </a>
+
+            {/* 기사 2 - 치매 예방 식습관 */}
+            <a 
+              href="https://www.amc.seoul.kr/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100 hover:shadow-md transition-all"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-1">뇌 건강에 좋은 음식과 식습관</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed">오메가3, 항산화 성분이 풍부한 음식으로 치매 위험 40% 감소</p>
+                  <p className="text-xs text-green-600 mt-1">서울아산병원</p>
+                </div>
+              </div>
+            </a>
+
+            {/* 기사 3 - 치매 예방 두뇌 활동 */}
+            <a 
+              href="https://www.snuh.org/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 hover:shadow-md transition-all"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-1">두뇌 훈련 게임의 치매 예방 효과</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed">매일 15분 두뇌 게임으로 기억력, 집중력, 문제해결 능력 향상</p>
+                  <p className="text-xs text-purple-600 mt-1">서울대학교병원</p>
+                </div>
+              </div>
+            </a>
+
+            {/* 기사 4 - 치매 예방 수면 */}
+            <a 
+              href="https://www.samsunghospital.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 border border-orange-100 hover:shadow-md transition-all"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-1">충분한 수면이 치매 예방의 핵심</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed">하루 7-8시간 양질의 수면으로 뇌 독소 제거, 기억 정리 효과</p>
+                  <p className="text-xs text-orange-600 mt-1">삼성서울병원</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
     </Layout>
   );
