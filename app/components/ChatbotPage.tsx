@@ -11,26 +11,154 @@ interface Message {
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
+  audioUrl?: string;
+  tags?: {
+    kdsq_item_id?: string;
+    risk_hint?: string;
+  };
 }
 
+interface ApiSession {
+  user_id: string;
+  session_id: string;
+}
+
+// API 상수
+const API_BASE_URL = 'https://8fvbrb5ai3.execute-api.ap-northeast-2.amazonaws.com/dev';
+
 export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: `안녕하세요 ${userInfo?.name || '사용자'}님! 오늘 기분은 어떠신가요? 편하게 이야기해주세요.`,
-      sender: 'bot',
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [currentBotResponse, setCurrentBotResponse] = useState('');
+  const [apiSession, setApiSession] = useState<ApiSession | null>(null);
+  const [sessionStarted, setSessionStarted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // API 함수들
+  const startSession = async (): Promise<ApiSession | null> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          display_name: userInfo?.name || '사용자',
+          guardian_email: 'guardian@example.com', // 실제 구현시 사용자 입력 받기
+          consent: true
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return {
+        user_id: data.user_id,
+        session_id: data.session_id
+      };
+    } catch (error) {
+      console.error('세션 시작 오류:', error);
+      return null;
+    }
+  };
+
+  const sendTurn = async (transcript: string): Promise<{ text: string; audioUrl?: string; tags?: any } | null> => {
+    if (!apiSession) return null;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/turn`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: apiSession.session_id,
+          user_id: apiSession.user_id,
+          final_transcript: transcript
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return {
+        text: data.assistant_text,
+        audioUrl: data.audio?.url,
+        tags: data.tags
+      };
+    } catch (error) {
+      console.error('턴 전송 오류:', error);
+      return null;
+    }
+  };
+
+  const endSession = async () => {
+    if (!apiSession) return;
+
+    try {
+      await fetch(`${API_BASE_URL}/session/end`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: apiSession.session_id
+        })
+      });
+    } catch (error) {
+      console.error('세션 종료 오류:', error);
+    }
+  };
+
+  // 컴포넌트 초기화 시 세션 시작
+  useEffect(() => {
+    const initializeSession = async () => {
+      const session = await startSession();
+      if (session) {
+        setApiSession(session);
+        setSessionStarted(true);
+        
+        // 초기 환영 메시지 추가
+        const welcomeMessage: Message = {
+          id: Date.now(),
+          text: `안녕하세요 ${userInfo?.name || '사용자'}님! 오늘 기분은 어떠신가요? 편하게 이야기해주세요.`,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages([welcomeMessage]);
+      } else {
+        // API 연결 실패시 데모 모드로 전환
+        console.warn('API 연결 실패, 데모 모드로 전환');
+        const welcomeMessage: Message = {
+          id: Date.now(),
+          text: `안녕하세요 ${userInfo?.name || '사용자'}님! (데모 모드) 오늘 기분은 어떠신가요?`,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages([welcomeMessage]);
+      }
+    };
+
+    initializeSession();
+
+    // 컴포넌트 언마운트 시 세션 종료
+    return () => {
+      if (apiSession) {
+        endSession();
+      }
+    };
+  }, []);
 
   // 음성 인식 및 합성 초기화
   useEffect(() => {
@@ -124,14 +252,55 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
     }
   };
 
-  // 텍스트를 음성으로 변환
-  const speakText = (text: string) => {
-    if (!synthRef.current) {
-      alert('이 브라우저는 음성 합성을 지원하지 않습니다.');
-      return;
+  // 텍스트를 음성으로 변환 (API 오디오 우선 사용)
+  const speakText = (text: string, audioUrl?: string) => {
+    // 기존 음성 중지
+    if (synthRef.current) {
+      synthRef.current.cancel();
+    }
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
     }
 
-    synthRef.current.cancel();
+    setIsSpeaking(true);
+
+    // API에서 제공한 오디오 URL이 있으면 우선 사용
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
+      
+      audio.onended = () => {
+        setIsSpeaking(false);
+        currentAudioRef.current = null;
+      };
+      
+      audio.onerror = () => {
+        console.warn('API 오디오 재생 실패, TTS로 대체');
+        setIsSpeaking(false);
+        currentAudioRef.current = null;
+        // TTS로 대체
+        speakWithTTS(text);
+      };
+      
+      audio.play().catch(() => {
+        console.warn('API 오디오 재생 실패, TTS로 대체');
+        setIsSpeaking(false);
+        currentAudioRef.current = null;
+        speakWithTTS(text);
+      });
+    } else {
+      // API 오디오가 없으면 브라우저 TTS 사용
+      speakWithTTS(text);
+    }
+  };
+
+  // 브라우저 TTS 사용
+  const speakWithTTS = (text: string) => {
+    if (!synthRef.current) {
+      setIsSpeaking(false);
+      return;
+    }
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ko-KR';
@@ -158,35 +327,63 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
   const stopSpeaking = () => {
     if (synthRef.current) {
       synthRef.current.cancel();
-      setIsSpeaking(false);
     }
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    setIsSpeaking(false);
   };
 
   const sendMessageWithText = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
+    // 사용자 메시지 추가
+    const userMessage: Message = {
+      id: Date.now(),
+      text: text.trim(),
+      sender: 'user',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, userMessage]);
+
     setIsLoading(true);
 
     try {
-      const response = await callDemoAPI(text, userInfo?.name);
+      let response;
       
-      setCurrentBotResponse(response);
-      
-      setTimeout(() => {
-        speakText(response);
-      }, 500);
-      
-      const botMessage: Message = {
-        id: Date.now() + 1,
-        text: response,
-        sender: 'bot',
-        timestamp: new Date()
-      };
+      if (apiSession) {
+        // 실제 API 호출
+        response = await sendTurn(text.trim());
+      } else {
+        // 데모 모드
+        response = await callDemoAPI(text.trim(), userInfo?.name);
+      }
 
-      setMessages(prev => [...prev, botMessage]);
+      if (response) {
+        setCurrentBotResponse(response.text);
+        
+        // 음성 재생
+        setTimeout(() => {
+          speakText(response.text, response.audioUrl);
+        }, 500);
+        
+        const botMessage: Message = {
+          id: Date.now() + 1,
+          text: response.text,
+          sender: 'bot',
+          timestamp: new Date(),
+          audioUrl: response.audioUrl,
+          tags: response.tags
+        };
+
+        setMessages(prev => [...prev, botMessage]);
+      } else {
+        throw new Error('응답을 받을 수 없습니다');
+      }
       
     } catch (error) {
-      console.error('챗봇 응답 오류:', error);
+      console.error('메시지 전송 오류:', error);
       const errorMessage = '죄송합니다. 잠시 후 다시 시도해주세요.';
       setCurrentBotResponse(errorMessage);
       
@@ -202,8 +399,8 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
     }
   };
 
-  // 데모용 API 호출
-  const callDemoAPI = async (_message: string, userName = "사용자"): Promise<string> => {
+  // 데모용 API 호출 (API 연결 실패시 사용)
+  const callDemoAPI = async (_message: string, userName = "사용자"): Promise<{ text: string; audioUrl?: string; tags?: any }> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const responses = [
@@ -215,7 +412,10 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
           `그런 경험을 하셨군요. 지금은 어떤 마음이신가요?`
         ];
         const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        resolve(randomResponse);
+        resolve({
+          text: randomResponse,
+          tags: { kdsq_item_id: 'NONE', risk_hint: 'NONE' }
+        });
       }, 1000 + Math.random() * 2000);
     });
   };
@@ -231,9 +431,15 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
     <Layout>
       <div className="h-full flex flex-col">
         {/* 헤더 */}
-        <div className="flex items-center p-5 bg-white border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center p-5 bg-white border-b border-gray-200 flex-shrink-0">
           <button
-            onClick={onBack}
+            onClick={async () => {
+              // 세션 종료 후 뒤로가기
+              if (apiSession) {
+                await endSession();
+              }
+              onBack();
+            }}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all mr-3"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -242,7 +448,9 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
           </button>
           <div className="flex-1 text-center">
             <h2 className="text-lg font-semibold text-gray-800">AI 친구와 대화</h2>
-            <p className="text-sm text-gray-600">마음을 편하게 나눠보세요</p>
+            <p className="text-sm text-gray-600">
+              {apiSession ? '실시간 AI 상담' : '데모 모드'} - 마음을 편하게 나눠보세요
+            </p>
           </div>
           <div className="w-8"></div>
         </div>
@@ -411,25 +619,45 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
 
           {/* 대화 메시지들 */}
           <div className="px-4 pb-4 space-y-3">
-            {messages.filter(message => message.sender === 'bot').map((message) => (
-              <div key={message.id} className="flex justify-start">
-                <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl bg-white text-gray-800 shadow-md border border-gray-100">
+            {messages.map((message) => (
+              <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md border ${
+                  message.sender === 'user' 
+                    ? 'bg-blue-500 text-white border-blue-400' 
+                    : 'bg-white text-gray-800 border-gray-100'
+                }`}>
                   <p className="text-sm leading-relaxed">{message.text}</p>
                   <div className="flex justify-between items-center mt-2">
                     <span className="text-xs opacity-70">{formatTime(message.timestamp)}</span>
-                    <button
-                      onClick={() => speakText(message.text)}
-                      disabled={isSpeaking}
-                      className={`ml-2 p-1.5 rounded-full transition-all ${
-                        isSpeaking ? 'bg-green-100 text-green-600' : 'hover:bg-gray-100 text-gray-500'
-                      }`}
-                      title="음성으로 듣기"
-                    >
-                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
-                        <path d="M3 9V15C3 15.5523 3.44772 16 4 16H6L10 20V4L6 8H4C3.44772 8 3 8.44772 3 9Z" fill="currentColor"/>
-                        <path d="M14 7C14 5.89543 13.1046 5 12 5V3C14.2091 3 16 4.79086 16 7V13C16 15.2091 14.2091 17 12 17V15C13.1046 15 14 14.1046 14 13V7Z" fill="currentColor"/>
-                      </svg>
-                    </button>
+                    {message.sender === 'bot' && (
+                      <div className="flex items-center gap-1">
+                        {/* KDSQ 태그 표시 */}
+                        {message.tags?.kdsq_item_id && message.tags.kdsq_item_id !== 'NONE' && (
+                          <span className="text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded-full">
+                            {message.tags.kdsq_item_id}
+                          </span>
+                        )}
+                        {/* 위험 힌트 표시 */}
+                        {message.tags?.risk_hint && message.tags.risk_hint !== 'NONE' && (
+                          <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                            ⚠️
+                          </span>
+                        )}
+                        <button
+                          onClick={() => speakText(message.text, message.audioUrl)}
+                          disabled={isSpeaking}
+                          className={`ml-2 p-1.5 rounded-full transition-all ${
+                            isSpeaking ? 'bg-green-100 text-green-600' : 'hover:bg-gray-100 text-gray-500'
+                          }`}
+                          title="음성으로 듣기"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 9V15C3 15.5523 3.44772 16 4 16H6L10 20V4L6 8H4C3.44772 8 3 8.44772 3 9Z" fill="currentColor"/>
+                            <path d="M14 7C14 5.89543 13.1046 5 12 5V3C14.2091 3 16 4.79086 16 7V13C16 15.2091 14.2091 17 12 17V15C13.1046 15 14 14.1046 14 13V7Z" fill="currentColor"/>
+                          </svg>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
