@@ -22,11 +22,12 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
       timestamp: new Date()
     }
   ]);
-  const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState(''); // 실시간 음성 인식 텍스트
+  const [currentBotResponse, setCurrentBotResponse] = useState(''); // 현재 AI 응답 텍스트
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
@@ -39,34 +40,48 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
+      recognitionRef.current.continuous = true; // 연속 인식 활성화
+      recognitionRef.current.interimResults = true; // 중간 결과 활성화
       recognitionRef.current.lang = 'ko-KR';
       
       recognitionRef.current.onstart = () => {
         setIsRecording(true);
+        setInterimTranscript('');
       };
       
       recognitionRef.current.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInputText(transcript);
-        setIsRecording(false);
+        let interimTranscript = '';
+        let finalTranscript = '';
         
-        // 음성 인식 결과를 자동으로 전송
-        setTimeout(() => {
-          if (transcript.trim()) {
-            sendMessageWithText(transcript);
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+          } else {
+            interimTranscript += transcript;
           }
-        }, 500); // 0.5초 후 자동 전송 (사용자가 결과를 확인할 시간)
+        }
+        
+        // 실시간으로 중간 결과 업데이트
+        setInterimTranscript(interimTranscript);
+        
+        // 최종 결과가 있으면 메시지 전송
+        if (finalTranscript.trim()) {
+          setInterimTranscript('');
+          setIsRecording(false);
+          sendMessageWithText(finalTranscript);
+        }
       };
       
       recognitionRef.current.onerror = (event: any) => {
         console.error('음성 인식 오류:', event.error);
         setIsRecording(false);
+        setInterimTranscript('');
       };
       
       recognitionRef.current.onend = () => {
         setIsRecording(false);
+        setInterimTranscript('');
       };
     }
 
@@ -84,8 +99,27 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
     scrollToBottom();
   }, [messages]);
 
-  // 음성 인식 시작/중지
-  const toggleRecording = () => {
+  // 뒤로가기 시 음성 중지 후 나가기
+  const handleBack = () => {
+    // 음성 인식 중지
+    if (isRecording && recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    
+    // 음성 재생 중지
+    if (isSpeaking && synthRef.current) {
+      synthRef.current.cancel();
+      setIsSpeaking(false);
+    }
+    
+    // 상태 초기화
+    setIsRecording(false);
+    setInterimTranscript('');
+    setCurrentBotResponse('');
+    
+    // 페이지 나가기
+    onBack();
+  };
     if (!speechSupported) {
       alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
       return;
@@ -137,14 +171,12 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
     }
   };
 
-  const sendMessage = async () => {
-    if (!inputText.trim() || isLoading) return;
-    await sendMessageWithText(inputText);
-  };
+
 
   const sendMessageWithText = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
+    // 사용자 메시지는 내부적으로만 저장 (화면에 표시하지 않음)
     const userMessage: Message = {
       id: Date.now(),
       text: text,
@@ -152,13 +184,20 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
+    // 메시지 목록에는 추가하지 않고 바로 AI 응답 요청
     setIsLoading(true);
 
     try {
       // 데모용 응답 (실제로는 AWS Bedrock API 호출)
       const response = await callDemoAPI(text, userInfo?.name);
+      
+      // AI 응답을 화면 중앙에 큰 글씨로 표시
+      setCurrentBotResponse(response);
+      
+      // AI 응답을 자동으로 음성으로 읽어주기
+      setTimeout(() => {
+        speakText(response);
+      }, 500);
       
       const botMessage: Message = {
         id: Date.now() + 1,
@@ -171,13 +210,16 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
       
     } catch (error) {
       console.error('챗봇 응답 오류:', error);
-      const errorMessage: Message = {
+      const errorMessage = '죄송합니다. 잠시 후 다시 시도해주세요.';
+      setCurrentBotResponse(errorMessage);
+      
+      const errorMsg: Message = {
         id: Date.now() + 1,
-        text: '죄송합니다. 잠시 후 다시 시도해주세요.',
+        text: errorMessage,
         sender: 'bot',
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsLoading(false);
     }
@@ -201,12 +243,7 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
     });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
+
 
   const formatTime = (timestamp: Date) => {
     return timestamp.toLocaleTimeString('ko-KR', { 
@@ -241,109 +278,135 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
           <div className="bg-gradient-to-b from-blue-50 to-transparent pb-6 mb-4">
             <div className="flex justify-center pt-6">
               <div className="relative">
-                {/* 캐릭터 몸체 */}
-                <div className={`relative w-28 h-28 transition-all duration-300 ${
+                {/* 캐릭터 몸체 - 쿼카 스타일 */}
+                <div className={`relative w-32 h-32 transition-all duration-300 ${
                   isSpeaking ? 'animate-pulse scale-110' : isLoading ? 'animate-bounce' : 'hover:scale-105'
                 }`}>
-                  {/* 메인 몸체 (노란 원) */}
-                  <div className="w-full h-full bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-full shadow-lg relative overflow-hidden">
+                  {/* 메인 몸체 (갈색 쿼카) */}
+                  <div className="w-full h-full bg-gradient-to-br from-amber-200 to-amber-300 rounded-full shadow-lg relative overflow-hidden">
                     
-                    {/* 볏 (빨간 부분) */}
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <div className="w-7 h-5 bg-gradient-to-b from-red-400 to-red-500 rounded-t-full"></div>
-                      <div className="w-5 h-3 bg-gradient-to-b from-red-400 to-red-500 rounded-t-full absolute -right-2 top-1"></div>
-                      <div className="w-3 h-2 bg-gradient-to-b from-red-400 to-red-500 rounded-t-full absolute -right-3 top-2"></div>
+                    {/* 귀 */}
+                    <div className="absolute -top-2 left-6">
+                      <div className="w-6 h-8 bg-gradient-to-b from-amber-300 to-amber-400 rounded-full transform -rotate-12"></div>
+                      <div className="w-4 h-6 bg-gradient-to-b from-pink-200 to-pink-300 rounded-full absolute top-1 left-1"></div>
+                    </div>
+                    <div className="absolute -top-2 right-6">
+                      <div className="w-6 h-8 bg-gradient-to-b from-amber-300 to-amber-400 rounded-full transform rotate-12"></div>
+                      <div className="w-4 h-6 bg-gradient-to-b from-pink-200 to-pink-300 rounded-full absolute top-1 right-1"></div>
                     </div>
                     
                     {/* 눈 */}
-                    <div className="absolute top-7 left-5">
-                      <div className="w-5 h-5 bg-gray-800 rounded-full relative">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full absolute top-1 left-1"></div>
+                    <div className="absolute top-8 left-7">
+                      <div className={`w-4 h-4 bg-gray-800 rounded-full relative transition-all duration-200 ${
+                        isSpeaking ? 'animate-pulse' : ''
+                      }`}>
+                        <div className="w-1 h-1 bg-white rounded-full absolute top-1 left-1"></div>
                       </div>
                     </div>
-                    <div className="absolute top-7 right-5">
-                      <div className="w-5 h-5 bg-gray-800 rounded-full relative">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full absolute top-1 left-1"></div>
+                    <div className="absolute top-8 right-7">
+                      <div className={`w-4 h-4 bg-gray-800 rounded-full relative transition-all duration-200 ${
+                        isSpeaking ? 'animate-pulse' : ''
+                      }`}>
+                        <div className="w-1 h-1 bg-white rounded-full absolute top-1 left-1"></div>
                       </div>
                     </div>
                     
-                    {/* 부리 */}
-                    <div className="absolute top-10 left-1/2 transform -translate-x-1/2">
-                      <div className="w-2.5 h-1.5 bg-gradient-to-b from-orange-400 to-orange-500 rounded-full"></div>
+                    {/* 코 */}
+                    <div className="absolute top-12 left-1/2 transform -translate-x-1/2">
+                      <div className="w-2 h-1.5 bg-gray-700 rounded-full"></div>
+                    </div>
+                    
+                    {/* 입 - 말하는 상태에 따라 변화 */}
+                    <div className="absolute top-14 left-1/2 transform -translate-x-1/2">
+                      {isSpeaking ? (
+                        <div className="relative">
+                          {/* 말하는 입 모양 - 애니메이션 */}
+                          <div className="w-4 h-3 bg-gray-700 rounded-full animate-pulse"></div>
+                          <div className="w-2 h-1 bg-pink-300 rounded-full absolute top-1 left-1 animate-bounce"></div>
+                        </div>
+                      ) : isLoading ? (
+                        <div className="w-3 h-1 bg-gray-600 rounded-full animate-pulse"></div>
+                      ) : (
+                        <div className="relative">
+                          {/* 웃는 입 */}
+                          <div className="w-6 h-3 border-b-2 border-gray-700 rounded-b-full"></div>
+                          <div className="w-1 h-1 bg-pink-300 rounded-full absolute -bottom-0.5 left-2.5"></div>
+                        </div>
+                      )}
                     </div>
                     
                     {/* 볼 */}
-                    <div className="absolute top-9 left-2.5">
-                      <div className="w-3 h-3 bg-pink-300 rounded-full opacity-60"></div>
+                    <div className={`absolute top-10 left-3 transition-all duration-300 ${
+                      isSpeaking ? 'scale-110' : ''
+                    }`}>
+                      <div className="w-3 h-3 bg-pink-300 rounded-full opacity-70"></div>
                     </div>
-                    <div className="absolute top-9 right-2.5">
-                      <div className="w-3 h-3 bg-pink-300 rounded-full opacity-60"></div>
-                    </div>
-                    
-                    {/* 날개 */}
-                    <div className="absolute top-14 -left-1.5">
-                      <div className="w-5 h-7 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full transform -rotate-12"></div>
-                    </div>
-                    <div className="absolute top-14 -right-1.5">
-                      <div className="w-5 h-7 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full transform rotate-12"></div>
+                    <div className={`absolute top-10 right-3 transition-all duration-300 ${
+                      isSpeaking ? 'scale-110' : ''
+                    }`}>
+                      <div className="w-3 h-3 bg-pink-300 rounded-full opacity-70"></div>
                     </div>
                     
-                    {/* 발 */}
-                    <div className="absolute -bottom-1.5 left-7">
-                      <div className="w-2.5 h-1.5 bg-orange-400 rounded-full"></div>
-                      <div className="w-0.5 h-0.5 bg-orange-500 rounded-full absolute -bottom-0.5 left-0"></div>
-                      <div className="w-0.5 h-0.5 bg-orange-500 rounded-full absolute -bottom-0.5 left-1"></div>
-                      <div className="w-0.5 h-0.5 bg-orange-500 rounded-full absolute -bottom-0.5 right-0"></div>
+                    {/* 몸통 */}
+                    <div className="absolute top-20 left-1/2 transform -translate-x-1/2">
+                      <div className="w-16 h-12 bg-gradient-to-b from-amber-200 to-amber-300 rounded-t-full"></div>
+                      <div className="w-12 h-8 bg-gradient-to-b from-cream-100 to-cream-200 rounded-full absolute top-2 left-2"></div>
                     </div>
-                    <div className="absolute -bottom-1.5 right-7">
-                      <div className="w-2.5 h-1.5 bg-orange-400 rounded-full"></div>
-                      <div className="w-0.5 h-0.5 bg-orange-500 rounded-full absolute -bottom-0.5 left-0"></div>
-                      <div className="w-0.5 h-0.5 bg-orange-500 rounded-full absolute -bottom-0.5 left-1"></div>
-                      <div className="w-0.5 h-0.5 bg-orange-500 rounded-full absolute -bottom-0.5 right-0"></div>
+                    
+                    {/* 팔 */}
+                    <div className="absolute top-16 -left-2">
+                      <div className={`w-4 h-8 bg-gradient-to-b from-amber-300 to-amber-400 rounded-full transform -rotate-12 transition-all duration-300 ${
+                        isSpeaking ? 'animate-bounce' : ''
+                      }`}></div>
+                    </div>
+                    <div className="absolute top-16 -right-2">
+                      <div className={`w-4 h-8 bg-gradient-to-b from-amber-300 to-amber-400 rounded-full transform rotate-12 transition-all duration-300 ${
+                        isSpeaking ? 'animate-bounce' : ''
+                      }`}></div>
                     </div>
                   </div>
                 </div>
                 
                 {/* 말하는 중 표시 */}
                 {isSpeaking && (
-                  <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full animate-pulse shadow-lg">
-                      🗣️ 말하는 중
+                  <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-green-500 text-white text-xs px-3 py-1.5 rounded-full animate-pulse shadow-lg flex items-center gap-1">
+                      🗣️ 쿼카가 말하는 중
                     </div>
                   </div>
                 )}
                 
                 {/* 로딩 중 표시 */}
                 {isLoading && (
-                  <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow-lg">
-                      💭 생각 중
+                  <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-blue-500 text-white text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                      💭 쿼카가 생각 중
                     </div>
                   </div>
                 )}
                 
                 {/* 음성 인식 중 표시 */}
                 {isRecording && (
-                  <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse shadow-lg">
-                      👂 듣는 중
+                  <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-red-500 text-white text-xs px-3 py-1.5 rounded-full animate-pulse shadow-lg flex items-center gap-1">
+                      👂 쿼카가 듣는 중
                     </div>
                   </div>
                 )}
                 
                 {/* 음성 파형 애니메이션 */}
                 {(isSpeaking || isRecording) && (
-                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                    {[...Array(5)].map((_, i) => (
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                    {[...Array(7)].map((_, i) => (
                       <div
                         key={i}
                         className={`w-1 rounded-full animate-pulse ${
                           isSpeaking ? 'bg-green-400' : 'bg-red-400'
                         }`}
                         style={{
-                          height: `${Math.random() * 15 + 8}px`,
+                          height: `${Math.random() * 20 + 10}px`,
                           animationDelay: `${i * 0.1}s`,
-                          animationDuration: '0.5s'
+                          animationDuration: '0.6s'
                         }}
                       />
                     ))}
@@ -355,41 +418,75 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
             {/* 캐릭터 인사말 */}
             <div className="text-center mt-4 px-6">
               <p className="text-sm text-gray-600 font-medium">
-                안녕하세요! 저는 삐약이에요 🐥
+                안녕하세요! 저는 쿼카에요 🐹
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                편하게 대화해주세요!
+                행복한 대화를 나눠봐요!
               </p>
             </div>
           </div>
 
-          {/* 대화 메시지들 */}
+          {/* AI 응답 큰 글씨 표시 */}
+          {currentBotResponse && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={() => setCurrentBotResponse('')}>
+              <div className="bg-white rounded-3xl p-8 mx-4 max-w-4xl w-full shadow-2xl">
+                <div className="text-center">
+                  <div className="text-blue-500 text-lg font-semibold mb-6 flex items-center justify-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                    AI 응답
+                  </div>
+                  <div className="text-4xl font-bold text-gray-800 leading-relaxed min-h-[6rem] flex items-center justify-center px-4">
+                    {currentBotResponse}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-6">
+                    화면을 터치하면 닫힙니다
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 실시간 음성 인식 텍스트 표시 */}
+          {isRecording && interimTranscript && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+              <div className="bg-white rounded-3xl p-8 mx-4 max-w-2xl w-full shadow-2xl">
+                <div className="text-center">
+                  <div className="text-red-500 text-lg font-semibold mb-4 flex items-center justify-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    음성 인식 중
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 leading-relaxed min-h-[4rem] flex items-center justify-center">
+                    {interimTranscript || "말씀해주세요..."}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-4">
+                    말이 끝나면 자동으로 전송됩니다
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 대화 메시지들 (AI 응답만 표시) */}
           <div className="px-4 pb-4 space-y-3">
-            {messages.map((message) => (
-              <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                  message.sender === 'user'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'bg-white text-gray-800 shadow-md border border-gray-100'
-                }`}>
+            {messages.filter(message => message.sender === 'bot').map((message) => (
+              <div key={message.id} className="flex justify-start">
+                <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl bg-white text-gray-800 shadow-md border border-gray-100">
                   <p className="text-sm leading-relaxed">{message.text}</p>
                   <div className="flex justify-between items-center mt-2">
                     <span className="text-xs opacity-70">{formatTime(message.timestamp)}</span>
-                    {message.sender === 'bot' && (
-                      <button
-                        onClick={() => speakText(message.text)}
-                        disabled={isSpeaking}
-                        className={`ml-2 p-1.5 rounded-full transition-all ${
-                          isSpeaking ? 'bg-green-100 text-green-600' : 'hover:bg-gray-100 text-gray-500'
-                        }`}
-                        title="음성으로 듣기"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
-                          <path d="M3 9V15C3 15.5523 3.44772 16 4 16H6L10 20V4L6 8H4C3.44772 8 3 8.44772 3 9Z" fill="currentColor"/>
-                          <path d="M14 7C14 5.89543 13.1046 5 12 5V3C14.2091 3 16 4.79086 16 7V13C16 15.2091 14.2091 17 12 17V15C13.1046 15 14 14.1046 14 13V7Z" fill="currentColor"/>
-                        </svg>
-                      </button>
-                    )}
+                    <button
+                      onClick={() => speakText(message.text)}
+                      disabled={isSpeaking}
+                      className={`ml-2 p-1.5 rounded-full transition-all ${
+                        isSpeaking ? 'bg-green-100 text-green-600' : 'hover:bg-gray-100 text-gray-500'
+                      }`}
+                      title="음성으로 듣기"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                        <path d="M3 9V15C3 15.5523 3.44772 16 4 16H6L10 20V4L6 8H4C3.44772 8 3 8.44772 3 9Z" fill="currentColor"/>
+                        <path d="M14 7C14 5.89543 13.1046 5 12 5V3C14.2091 3 16 4.79086 16 7V13C16 15.2091 14.2091 17 12 17V15C13.1046 15 14 14.1046 14 13V7Z" fill="currentColor"/>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -410,7 +507,7 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
           </div>
         </div>
 
-        {/* 입력 영역 */}
+        {/* 음성 입력 영역 */}
         <div className="p-5 bg-white border-t border-gray-200 flex-shrink-0">
           {isSpeaking && (
             <div className="flex justify-center mb-3">
@@ -426,68 +523,75 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
             </div>
           )}
           
-          <div className="flex items-end gap-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-3xl p-3 shadow-inner">
-            <textarea
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder={
-                isRecording 
-                  ? "🎤 음성을 인식하고 있습니다..." 
-                  : "💬 메시지를 입력하거나 음성으로 말해보세요..."
-              }
-              className="flex-1 bg-transparent border-none outline-none resize-none px-4 py-3 text-sm max-h-20 placeholder-gray-500"
-              rows={1}
-              disabled={isLoading || isRecording}
-            />
-            
-            <div className="flex gap-2">
-              {speechSupported && (
-                <button
-                  onClick={toggleRecording}
-                  className={`p-3 rounded-full transition-all shadow-lg ${
-                    isRecording
-                      ? 'bg-red-500 text-white animate-pulse scale-110'
-                      : 'bg-green-500 text-white hover:bg-green-600 hover:scale-105'
-                  }`}
-                  disabled={isLoading}
-                  title={isRecording ? "🛑 음성 인식 중지" : "🎤 음성으로 입력"}
-                >
-                  {isRecording ? (
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                      <rect x="6" y="6" width="8" height="8" rx="1" fill="currentColor"/>
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 1C8.34315 1 7 2.34315 7 4V10C7 11.6569 8.34315 13 10 13C11.6569 13 13 11.6569 13 10V4C13 2.34315 11.6569 1 10 1Z" fill="currentColor"/>
-                      <path d="M5 8C5.55228 8 6 8.44772 6 9V10C6 13.3137 8.68629 16 12 16H14C14.5523 16 15 16.4477 15 17C15 17.5523 14.5523 18 14 18H12C7.58172 18 4 14.4183 4 10V9C4 8.44772 4.44772 8 5 8Z" fill="currentColor"/>
-                      <path d="M10 16V19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  )}
-                </button>
-              )}
-              
+          <div className="flex justify-center items-center gap-6">
+            {/* 나가기 버튼 */}
+            <button
+              onClick={onBack}
+              className="p-4 rounded-full bg-gray-500 text-white hover:bg-gray-600 transition-all shadow-lg hover:scale-105"
+              title="대화 종료"
+            >
+              <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+                <path d="M15 10H5M5 10L8 7M5 10L8 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {/* 마이크 버튼 */}
+            {speechSupported ? (
               <button
-                onClick={sendMessage}
-                className={`p-3 rounded-full transition-all shadow-lg ${
-                  inputText.trim() && !isLoading && !isRecording
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-xl hover:scale-105'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                onClick={toggleRecording}
+                className={`p-6 rounded-full transition-all shadow-xl ${
+                  isRecording
+                    ? 'bg-red-500 text-white animate-pulse scale-110 shadow-red-200'
+                    : 'bg-gradient-to-r from-green-400 to-green-600 text-white hover:from-green-500 hover:to-green-700 hover:scale-105 shadow-green-200'
                 }`}
-                disabled={!inputText.trim() || isLoading || isRecording}
-                title="💌 메시지 보내기"
+                disabled={isLoading}
+                title={isRecording ? "🛑 음성 인식 중지" : "🎤 음성으로 말하기"}
               >
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                  <path d="M18 2L9 11M18 2L12 18L9 11M18 2L2 8L9 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                {isRecording ? (
+                  <svg width="32" height="32" viewBox="0 0 20 20" fill="none">
+                    <rect x="6" y="6" width="8" height="8" rx="1" fill="currentColor"/>
+                  </svg>
+                ) : (
+                  <svg width="32" height="32" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 1C8.34315 1 7 2.34315 7 4V10C7 11.6569 8.34315 13 10 13C11.6569 13 13 11.6569 13 10V4C13 2.34315 11.6569 1 10 1Z" fill="currentColor"/>
+                    <path d="M5 8C5.55228 8 6 8.44772 6 9V10C6 13.3137 8.68629 16 12 16H14C14.5523 16 15 16.4477 15 17C15 17.5523 14.5523 18 14 18H12C7.58172 18 4 14.4183 4 10V9C4 8.44772 4.44772 8 5 8Z" fill="currentColor"/>
+                    <path d="M10 16V19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                )}
+              </button>
+            ) : (
+              <div className="text-center text-gray-500">
+                <p className="text-sm">음성 인식을 지원하지 않는 브라우저입니다</p>
+              </div>
+            )}
+
+            {/* 음성 중지 버튼 (말하는 중일 때만 표시) */}
+            {isSpeaking && (
+              <button
+                onClick={stopSpeaking}
+                className="p-4 rounded-full bg-orange-500 text-white hover:bg-orange-600 transition-all shadow-lg hover:scale-105"
+                title="음성 중지"
+              >
+                <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+                  <rect x="6" y="4" width="8" height="12" rx="1" fill="currentColor"/>
                 </svg>
               </button>
-            </div>
+            )}
           </div>
           
           {/* 도움말 */}
-          <div className="text-center mt-3">
-            <p className="text-xs text-gray-500">
-              💡 <span className="font-medium">팁:</span> 음성 버튼을 눌러 말하면 자동으로 전송돼요!
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600 font-medium">
+              {isRecording ? (
+                <span className="text-red-600">🎤 말씀하시면 실시간으로 인식됩니다 (마이크 버튼으로 중지 가능)</span>
+              ) : isSpeaking ? (
+                <span className="text-green-600">� 쿼카가 응답 중입니다 (오른쪽 버튼으로 중지 가능)</span>
+              ) : (
+                <span>�🗣️ 마이크 버튼을 눌러 음성으로 대화해보세요</span>
+              )}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              왼쪽 화살표 버튼을 누르면 대화를 종료합니다
             </p>
           </div>
         </div>

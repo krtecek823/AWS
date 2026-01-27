@@ -23,7 +23,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('auth');
   const [currentGame, setCurrentGame] = useState<GameType>('menu');
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [totalScore, setTotalScore] = useState(0);
+
 
   const handleLogin = (loginUserInfo: UserInfo) => {
     setUserInfo(loginUserInfo);
@@ -34,7 +34,6 @@ export default function App() {
     setUserInfo(null);
     setCurrentPage('auth');
     setCurrentGame('menu');
-    setTotalScore(0);
   };
 
   const handleChatbot = () => {
@@ -59,9 +58,7 @@ export default function App() {
     setCurrentGame('menu');
   };
 
-  const handleScoreUpdate = (score: number) => {
-    setTotalScore((prev) => prev + score);
-  };
+
 
   // 인증 페이지
   if (currentPage === 'auth') {
@@ -106,25 +103,24 @@ export default function App() {
           {currentGame === 'menu' && (
             <GameMenu 
               onGameSelect={handleGameSelect} 
-              totalScore={totalScore} 
               userInfo={userInfo || undefined} 
               onBack={handleBackToHome}
             />
           )}
           {currentGame === 'memory' && (
-            <MemoryCardGame onBack={handleBackToGameMenu} onScoreUpdate={handleScoreUpdate} />
+            <MemoryCardGame onBack={handleBackToGameMenu} />
           )}
           {currentGame === 'sequence' && (
-            <NumberSequenceGame onBack={handleBackToGameMenu} onScoreUpdate={handleScoreUpdate} />
+            <NumberSequenceGame onBack={handleBackToGameMenu} />
           )}
           {currentGame === 'math' && (
-            <MathGame onBack={handleBackToGameMenu} onScoreUpdate={handleScoreUpdate} />
+            <MathGame onBack={handleBackToGameMenu} />
           )}
           {currentGame === 'color' && (
-            <ColorGame onBack={handleBackToGameMenu} onScoreUpdate={handleScoreUpdate} />
+            <ColorGame onBack={handleBackToGameMenu} />
           )}
           {currentGame === 'kiro' && (
-            <KiroPuzzleGame onBack={handleBackToGameMenu} onScoreUpdate={handleScoreUpdate} />
+            <KiroPuzzleGame onBack={handleBackToGameMenu} />
           )}
         </div>
       </Layout>

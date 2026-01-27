@@ -3,7 +3,6 @@ import { ArrowLeft, Clock } from 'lucide-react';
 
 interface MathGameProps {
   onBack: () => void;
-  onScoreUpdate: (score: number) => void;
 }
 
 type Operation = '+' | '-' | '×';
@@ -15,7 +14,7 @@ interface Question {
   answer: number;
 }
 
-export function MathGame({ onBack, onScoreUpdate }: MathGameProps) {
+export function MathGame({ onBack }: MathGameProps) {
   const [question, setQuestion] = useState<Question | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [score, setScore] = useState(0);
@@ -86,7 +85,6 @@ export function MathGame({ onBack, onScoreUpdate }: MathGameProps) {
       const points = 5;
       setScore((prev) => prev + points);
       setCorrectCount((prev) => prev + 1);
-      onScoreUpdate(points);
     } else {
       setWrongCount((prev) => prev + 1);
     }

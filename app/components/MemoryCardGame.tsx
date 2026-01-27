@@ -11,12 +11,11 @@ interface Card {
 
 interface MemoryCardGameProps {
   onBack: () => void;
-  onScoreUpdate: (score: number) => void;
 }
 
 const emojis = ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🥝'];
 
-export function MemoryCardGame({ onBack, onScoreUpdate }: MemoryCardGameProps) {
+export function MemoryCardGame({ onBack }: MemoryCardGameProps) {
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
@@ -65,7 +64,6 @@ export function MemoryCardGame({ onBack, onScoreUpdate }: MemoryCardGameProps) {
           setIsChecking(false);
           const newScore = 10;
           setScore((prev) => prev + newScore);
-          onScoreUpdate(newScore);
         }, 500);
       } else {
         setTimeout(() => {
@@ -82,7 +80,7 @@ export function MemoryCardGame({ onBack, onScoreUpdate }: MemoryCardGameProps) {
       }
       setMoves((prev) => prev + 1);
     }
-  }, [flippedCards, cards, onScoreUpdate]);
+  }, [flippedCards, cards]);
 
   const handleCardClick = (id: number) => {
     if (isChecking || flippedCards.length === 2) return;

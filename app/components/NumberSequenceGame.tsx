@@ -4,12 +4,11 @@ import GameWrapper from './GameWrapper';
 
 interface NumberSequenceGameProps {
   onBack: () => void;
-  onScoreUpdate: (score: number) => void;
 }
 
 type GameState = 'ready' | 'showing' | 'input' | 'result';
 
-export function NumberSequenceGame({ onBack, onScoreUpdate }: NumberSequenceGameProps) {
+export function NumberSequenceGame({ onBack }: NumberSequenceGameProps) {
   const [sequence, setSequence] = useState<number[]>([]);
   const [userInput, setUserInput] = useState<number[]>([]);
   const [gameState, setGameState] = useState<GameState>('ready');
@@ -63,7 +62,6 @@ export function NumberSequenceGame({ onBack, onScoreUpdate }: NumberSequenceGame
     if (correct) {
       const points = level * 5;
       setScore((prev) => prev + points);
-      onScoreUpdate(points);
       setTimeout(() => {
         setLevel((prev) => prev + 1);
         startGame();

@@ -2,12 +2,11 @@ import type { GameType } from '@/app/App';
 
 interface GameMenuProps {
   onGameSelect: (game: GameType) => void;
-  totalScore: number;
   userInfo?: { name: string; id: string };
   onBack?: () => void;
 }
 
-export function GameMenu({ onGameSelect, totalScore, userInfo, onBack }: GameMenuProps) {
+export function GameMenu({ onGameSelect, userInfo, onBack }: GameMenuProps) {
   const games = [
     {
       id: 'color' as GameType,
@@ -80,21 +79,6 @@ export function GameMenu({ onGameSelect, totalScore, userInfo, onBack }: GameMen
         </div>
         {onBack && <div className="w-12"></div>}
       </div>
-
-      {/* 점수 표시 */}
-      {totalScore > 0 && (
-        <div className="bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50 rounded-2xl p-6 mb-6 border border-orange-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-base text-gray-600 mb-2 font-medium">누적 점수</div>
-              <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                {totalScore.toLocaleString()}
-              </div>
-            </div>
-            <div className="text-5xl animate-bounce">🏆</div>
-          </div>
-        </div>
-      )}
 
       {/* 게임 목록 */}
       <div className="flex-1 overflow-y-auto space-y-4">

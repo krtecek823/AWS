@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 
 type GameProps = {
   onBack: () => void;
-  onScoreUpdate: (delta: number) => void; // App 전체 누적 점수에 "증분"으로 반영
 };
 
 type Cell = number | null;
@@ -131,7 +130,7 @@ function isInsideBoard(r: number, c: number) {
   return r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE;
 }
 
-export default function KiroPuzzleGame({ onBack, onScoreUpdate }: GameProps) {
+export default function KiroPuzzleGame({ onBack }: GameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [patternIndex, setPatternIndex] = useState<number>(0); // 0-based
   const [currentPattern, setCurrentPattern] = useState<number[][]>(solutionPatterns[0]);
@@ -152,11 +151,7 @@ export default function KiroPuzzleGame({ onBack, onScoreUpdate }: GameProps) {
   // );
 
   function applyScore(nextScore: number) {
-    setScore((prev) => {
-      const delta = nextScore - prev;
-      if (delta !== 0) onScoreUpdate(delta);
-      return nextScore;
-    });
+    setScore(nextScore);
   }
 
   function resetToNewPattern() {
