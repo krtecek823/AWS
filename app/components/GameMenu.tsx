@@ -1,12 +1,14 @@
-import { Brain, Calculator, Palette, Puzzle } from 'lucide-react';
+import { Brain, Calculator, Palette, Puzzle, ArrowLeft } from 'lucide-react';
 import type { GameType } from '@/app/App';
 
 interface GameMenuProps {
   onGameSelect: (game: GameType) => void;
   totalScore: number;
+  userInfo?: { name: string; id: string };
+  onBack?: () => void;
 }
 
-export function GameMenu({ onGameSelect, totalScore }: GameMenuProps) {
+export function GameMenu({ onGameSelect, totalScore, userInfo, onBack }: GameMenuProps) {
   const games = [
     {
       id: 'memory' as GameType,
@@ -52,11 +54,30 @@ export function GameMenu({ onGameSelect, totalScore }: GameMenuProps) {
 
   return (
     <div className="w-full max-w-lg mx-auto px-4">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold mb-2">두뇌 훈련</h1>
-        <p className="text-gray-600">
-          매일 조금씩 두뇌를 훈련해보세요
-        </p>
+      {/* 헤더 */}
+      <div className="flex items-center justify-between mb-8">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        )}
+        <div className="flex-1 text-center">
+          <h1 className="text-3xl font-bold mb-2">두뇌 훈련</h1>
+          {userInfo && (
+            <p className="text-gray-600">
+              {userInfo.name}님의 두뇌를 훈련해보세요
+            </p>
+          )}
+          {!userInfo && (
+            <p className="text-gray-600">
+              매일 조금씩 두뇌를 훈련해보세요
+            </p>
+          )}
+        </div>
+        {onBack && <div className="w-10"></div>}
       </div>
 
       {totalScore > 0 && (
