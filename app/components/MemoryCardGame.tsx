@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
+import GameWrapper from './GameWrapper';
 
 interface Card {
   id: number;
@@ -20,6 +21,7 @@ export function MemoryCardGame({ onBack, onScoreUpdate }: MemoryCardGameProps) {
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [matches, setMatches] = useState(0);
+  const [score, setScore] = useState(0);
   const [isChecking, setIsChecking] = useState(false);
 
   const initializeGame = () => {
@@ -35,6 +37,7 @@ export function MemoryCardGame({ onBack, onScoreUpdate }: MemoryCardGameProps) {
     setFlippedCards([]);
     setMoves(0);
     setMatches(0);
+    setScore(0);
   };
 
   useEffect(() => {
@@ -60,7 +63,9 @@ export function MemoryCardGame({ onBack, onScoreUpdate }: MemoryCardGameProps) {
           setMatches((prev) => prev + 1);
           setFlippedCards([]);
           setIsChecking(false);
-          onScoreUpdate(10);
+          const newScore = 10;
+          setScore((prev) => prev + newScore);
+          onScoreUpdate(newScore);
         }, 500);
       } else {
         setTimeout(() => {
@@ -93,63 +98,61 @@ export function MemoryCardGame({ onBack, onScoreUpdate }: MemoryCardGameProps) {
   const isGameComplete = matches === emojis.length;
 
   return (
-    <div className="w-full max-w-lg mx-auto px-4">
-      <div className="bg-white">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors active:scale-95"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>뒤로</span>
-          </button>
-          <button
-            onClick={initializeGame}
-            className="flex items-center gap-2 px-4 py-2 bg-[#0064FF] text-white rounded-xl hover:bg-[#0055DD] transition-colors active:scale-95"
-          >
-            <RotateCcw className="w-5 h-5" />
-            <span>다시</span>
-          </button>
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-2xl mb-2">카드 매칭</h2>
-          <div className="flex gap-4 text-sm text-gray-600">
-            <div>이동: {moves}</div>
-            <div>매칭: {matches}/{emojis.length}</div>
-          </div>
-        </div>
-
+    <GameWrapper 
+      title="카드 매칭" 
+      onBack={onBack} 
+      score={score} 
+      moves={moves}
+    >
+      <div className="flex flex-col h-full">
+        {/* 게임 완료 메시지 */}
         {isGameComplete && (
-          <div className="bg-blue-50 border border-[#0064FF] rounded-2xl p-6 mb-6">
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 mb-4">
             <div className="text-center">
-              <div className="text-4xl mb-2">🎉</div>
-              <p className="text-lg">
+              <div className="text-3xl mb-2">🎉</div>
+              <p className="text-sm font-semibold text-gray-800">
                 {moves}번 만에 완성!
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                매칭: {matches}/{emojis.length}
               </p>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-4 gap-3">
-          {cards.map((card) => (
-            <button
-              key={card.id}
-              onClick={() => handleCardClick(card.id)}
-              disabled={isChecking || card.isMatched}
-              className={`aspect-square rounded-2xl text-4xl flex items-center justify-center transition-all duration-300 ${
-                card.isFlipped || card.isMatched
-                  ? 'bg-white border-2 border-[#0064FF]'
-                  : 'bg-[#0064FF] hover:bg-[#0055DD]'
-              } ${
-                card.isMatched ? 'opacity-50' : ''
-              } active:scale-95`}
-            >
-              {(card.isFlipped || card.isMatched) && card.value}
-            </button>
-          ))}
+        {/* 카드 그리드 */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="grid grid-cols-4 gap-2 w-full max-w-xs">
+            {cards.map((card) => (
+              <button
+                key={card.id}
+                onClick={() => handleCardClick(card.id)}
+                disabled={isChecking || card.isMatched}
+                className={`aspect-square rounded-xl text-2xl flex items-center justify-center transition-all duration-300 ${
+                  card.isFlipped || card.isMatched
+                    ? 'bg-white border-2 border-blue-500 shadow-sm'
+                    : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
+                } ${
+                  card.isMatched ? 'opacity-60' : ''
+                } active:scale-95`}
+              >
+                {(card.isFlipped || card.isMatched) && card.value}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 다시 시작 버튼 */}
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={initializeGame}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all active:scale-95"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span className="text-sm">다시 시작</span>
+          </button>
         </div>
       </div>
-    </div>
+    </GameWrapper>
   );
 }

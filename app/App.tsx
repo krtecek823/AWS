@@ -3,6 +3,7 @@ import AuthPage from '@/app/components/AuthPage';
 import HomePage from '@/app/components/HomePage';
 import ChatbotPage from '@/app/components/ChatbotPage';
 import Layout from '@/app/components/Layout';
+import InstallPrompt from '@/app/components/InstallPrompt';
 import { GameMenu } from '@/app/components/GameMenu';
 import KiroPuzzleGame from '@/app/components/KiroPuzzleGame';
 import { MemoryCardGame } from '@/app/components/MemoryCardGame';
@@ -64,18 +65,26 @@ export default function App() {
 
   // 인증 페이지
   if (currentPage === 'auth') {
-    return <AuthPage onLogin={handleLogin} />;
+    return (
+      <>
+        <AuthPage onLogin={handleLogin} />
+        <InstallPrompt />
+      </>
+    );
   }
 
   // 홈 페이지
   if (currentPage === 'home') {
     return (
-      <HomePage 
-        userInfo={userInfo!}
-        onLogout={handleLogout}
-        onChatbot={handleChatbot}
-        onBrainGame={handleBrainGame}
-      />
+      <>
+        <HomePage 
+          userInfo={userInfo!}
+          onLogout={handleLogout}
+          onChatbot={handleChatbot}
+          onBrainGame={handleBrainGame}
+        />
+        <InstallPrompt />
+      </>
     );
   }
 
@@ -92,8 +101,8 @@ export default function App() {
   // 두뇌 훈련 게임 페이지
   if (currentPage === 'braingame') {
     return (
-      <Layout showMobileFrame={false}>
-        <div className="max-w-4xl mx-auto">
+      <Layout>
+        <div className="h-full flex flex-col">
           {currentGame === 'menu' && (
             <GameMenu 
               onGameSelect={handleGameSelect} 
