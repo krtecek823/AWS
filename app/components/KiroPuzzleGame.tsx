@@ -408,65 +408,67 @@ export default function KiroPuzzleGame({ onBack, onScoreUpdate }: GameProps) {
         </div>
       </div>
 
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="w-full max-w-4xl space-y-6">
         {/* Board */}
         <div className="rounded-xl border border-border bg-card p-4">
           <div className="font-semibold mb-3">보드</div>
-          <div
-            ref={boardRef}
-            className="select-none rounded-xl bg-zinc-900 p-3 inline-block"
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${BOARD_SIZE}, ${CELL_PX}px)`,
-              gridTemplateRows: `repeat(${BOARD_SIZE}, ${CELL_PX}px)`,
-              gap: `${GAP_PX}px`,
-            }}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-          >
-            {board.flatMap((row, r) =>
-              row.map((cell, c) => {
-                const piece = cell ? pieces.find((p) => p.id === cell) : null;
-                const inPreview = previewCells.some((pc) => pc.r === r && pc.c === c);
+          <div className="flex justify-center">
+            <div
+              ref={boardRef}
+              className="select-none rounded-xl bg-zinc-900 p-3 inline-block"
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${BOARD_SIZE}, ${CELL_PX}px)`,
+                gridTemplateRows: `repeat(${BOARD_SIZE}, ${CELL_PX}px)`,
+                gap: `${GAP_PX}px`,
+              }}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+            >
+              {board.flatMap((row, r) =>
+                row.map((cell, c) => {
+                  const piece = cell ? pieces.find((p) => p.id === cell) : null;
+                  const inPreview = previewCells.some((pc) => pc.r === r && pc.c === c);
 
-                const baseStyle: React.CSSProperties = piece
-                  ? { backgroundColor: piece.color, color: "white" }
-                  : { backgroundColor: "#f3f4f6", color: "#9ca3af" };
+                  const baseStyle: React.CSSProperties = piece
+                    ? { backgroundColor: piece.color, color: "white" }
+                    : { backgroundColor: "#f3f4f6", color: "#9ca3af" };
 
-                const previewStyle: React.CSSProperties | undefined = inPreview
-                  ? previewValid
-                    ? { 
-                        outline: "2px dashed #22c55e", 
-                        backgroundColor: "rgba(34,197,94,0.25)" 
-                      }
-                    : { 
-                        outline: "2px dashed #ef4444", 
-                        backgroundColor: "rgba(239,68,68,0.25)" 
-                      }
-                  : undefined;
+                  const previewStyle: React.CSSProperties | undefined = inPreview
+                    ? previewValid
+                      ? { 
+                          outline: "2px dashed #22c55e", 
+                          backgroundColor: "rgba(34,197,94,0.25)" 
+                        }
+                      : { 
+                          outline: "2px dashed #ef4444", 
+                          backgroundColor: "rgba(239,68,68,0.25)" 
+                        }
+                    : undefined;
 
-                return (
-                  <div
-                    key={`${r}-${c}`}
-                    className={[
-                      "rounded-md flex items-center justify-center font-bold transition",
-                      piece ? "cursor-pointer hover:scale-[1.03]" : "",
-                    ].join(" ")}
-                    style={{ ...baseStyle, ...previewStyle }}
-                    title={piece ? `${piece.name} 조각 (클릭하여 회수)` : ""}
-                    onClick={() => {
-                      if (cell) removePieceFromBoard(cell);
-                    }}
-                  >
-                    {piece ? piece.name : "·"}
-                  </div>
-                );
-              })
-            )}
+                  return (
+                    <div
+                      key={`${r}-${c}`}
+                      className={[
+                        "rounded-md flex items-center justify-center font-bold transition",
+                        piece ? "cursor-pointer hover:scale-[1.03]" : "",
+                      ].join(" ")}
+                      style={{ ...baseStyle, ...previewStyle }}
+                      title={piece ? `${piece.name} 조각 (클릭하여 회수)` : ""}
+                      onClick={() => {
+                        if (cell) removePieceFromBoard(cell);
+                      }}
+                    >
+                      {piece ? piece.name : "·"}
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
 
           {/* Controls */}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
             <button
               onClick={resetToNewPattern}
               className="px-4 py-2 rounded-full bg-orange-600 text-white font-semibold shadow hover:brightness-110 transition"
@@ -491,12 +493,12 @@ export default function KiroPuzzleGame({ onBack, onScoreUpdate }: GameProps) {
         {/* Pieces */}
         <div className="rounded-xl border border-border bg-card p-4">
           <div className="font-semibold mb-3">조각</div>
-          <div className="text-sm text-muted-foreground mb-3">
+          <div className="text-sm text-muted-foreground mb-3 text-center">
             남은 조각: <span className="font-medium text-foreground">{availablePieces.length}</span> /{" "}
             {pieces.length}
           </div>
           <div className="relative">
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               {availablePieces.map((p) => {
                 const width = (Math.max(...p.blocks.map((b) => b.x)) + 1) * 34;
                 const height = (Math.max(...p.blocks.map((b) => b.y)) + 1) * 34;
