@@ -109,84 +109,95 @@ export default function GuardianDashboard({ userInfo, onBack, onLogout }: Guardi
   const healthStatus = getHealthStatus();
 
   return (
-    <Layout>
-      <div className="p-6 h-full overflow-y-auto">
-        {/* 헤더 */}
-        <div className="flex justify-between items-start mb-6 border-b border-gray-200 pb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
+    <Layout isGuardianMode={true}>
+      <div className="h-full flex flex-col">
+        {/* 헤더 - 초록색 배경 */}
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <button
+                  onClick={onBack}
+                  className="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 2.5C11.375 2.5 12.5 3.625 12.5 5C12.5 6.375 11.375 7.5 10 7.5C8.625 7.5 7.5 6.375 7.5 5C7.5 3.625 8.625 2.5 10 2.5ZM10 15C12.875 15 17.25 16.625 17.5 17.5H2.5C2.75 16.625 7.125 15 10 15ZM10 10C12.75 10 17.5 12.25 17.5 15V17.5H2.5V15C2.5 12.25 7.25 10 10 10Z" fill="white"/>
+                    </svg>
+                  </div>
+                  <h1 className={`${titleSizeClasses[fontSize]} font-bold text-white`}>
+                    보호자 대시보드
+                  </h1>
+                </div>
+              </div>
+              <p className={`${fontSizeClasses[fontSize]} text-white/90 ml-12`}>
+                {userInfo?.name || '사용자'}님의 활동 통계
+              </p>
+              <p className="text-sm text-white/80 ml-12">
+                {getCurrentDate()}
+              </p>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              {/* 로그아웃 버튼 */}
               <button
-                onClick={onBack}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                onClick={onLogout}
+                className="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-all"
               >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H9M13 7L17 11M17 11L13 15M17 11H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
-              <h1 className={`${titleSizeClasses[fontSize]} font-bold text-gray-800`}>
-                보호자 대시보드
-              </h1>
+              
+              {/* 글씨 크기 조절 버튼 */}
+              <button
+                onClick={toggleFontSize}
+                className="flex items-center gap-2 px-4 py-3 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all text-sm font-medium"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <text x="2" y="8" fontSize="6" fill="currentColor">A</text>
+                  <text x="8" y="12" fontSize="8" fill="currentColor">A</text>
+                  <text x="13" y="16" fontSize="10" fill="currentColor">A</text>
+                </svg>
+                <span>{getFontSizeLabel()}</span>
+              </button>
             </div>
-            <p className={`${fontSizeClasses[fontSize]} text-gray-600 ml-12`}>
-              {userInfo?.name || '사용자'}님의 활동 통계
-            </p>
-            <p className="text-sm text-gray-500 ml-12">
-              {getCurrentDate()}
-            </p>
-          </div>
-          
-          <div className="flex flex-col gap-3">
-            {/* 로그아웃 버튼 */}
-            <button
-              onClick={onLogout}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M9 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H9M13 7L17 11M17 11L13 15M17 11H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            
-            {/* 글씨 크기 조절 버튼 */}
-            <button
-              onClick={toggleFontSize}
-              className="flex items-center gap-2 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all text-sm font-medium"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <text x="2" y="8" fontSize="6" fill="currentColor">A</text>
-                <text x="8" y="12" fontSize="8" fill="currentColor">A</text>
-                <text x="13" y="16" fontSize="10" fill="currentColor">A</text>
-              </svg>
-              <span>{getFontSizeLabel()}</span>
-            </button>
           </div>
         </div>
 
-        {/* 기간 선택 */}
-        <div className="flex gap-2 mb-6">
-          {[
-            { key: 'week', label: '최근 7일' },
-            { key: 'month', label: '최근 30일' },
-            { key: 'quarter', label: '최근 3개월' }
-          ].map((period) => (
-            <button
-              key={period.key}
-              onClick={() => setSelectedPeriod(period.key as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                selectedPeriod === period.key
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {period.label}
-            </button>
-          ))}
-        </div>
+        {/* 콘텐츠 영역 */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* 기간 선택 */}
+          <div className="flex gap-2 mb-6">
+            {[
+              { key: 'week', label: '최근 7일' },
+              { key: 'month', label: '최근 30일' },
+              { key: 'quarter', label: '최근 3개월' }
+            ].map((period) => (
+              <button
+                key={period.key}
+                onClick={() => setSelectedPeriod(period.key as any)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  selectedPeriod === period.key
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {period.label}
+              </button>
+            ))}
+          </div>
 
-        {/* 종합 소견 */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            🩺 종합 소견
-          </h3>
+          {/* 종합 소견 */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              🩺 종합 소견
+            </h3>
           <div className="space-y-4">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
               <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
@@ -457,6 +468,7 @@ export default function GuardianDashboard({ userInfo, onBack, onLogout }: Guardi
               </div>
             ))}
           </div>
+        </div>
         </div>
       </div>
     </Layout>
