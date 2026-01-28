@@ -25,6 +25,7 @@ export function MemoryCardGame({ onBack, userInfo }: MemoryCardGameProps) {
   const [score, setScore] = useState(0);
   const [isChecking, setIsChecking] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
   const initializeGame = () => {
     const shuffledEmojis = [...emojis, ...emojis]
@@ -41,6 +42,12 @@ export function MemoryCardGame({ onBack, userInfo }: MemoryCardGameProps) {
     setMatches(0);
     setScore(0);
     setGameCompleted(false);
+    setShowPreview(true);
+    
+    // 3초 후 카드 숨기기
+    setTimeout(() => {
+      setShowPreview(false);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -87,7 +94,7 @@ export function MemoryCardGame({ onBack, userInfo }: MemoryCardGameProps) {
   }, [flippedCards, cards]);
 
   const handleCardClick = (id: number) => {
-    if (isChecking || flippedCards.length === 2) return;
+    if (isChecking || flippedCards.length === 2 || showPreview) return;
     const card = cards[id];
     if (card.isFlipped || card.isMatched) return;
 
@@ -127,6 +134,21 @@ export function MemoryCardGame({ onBack, userInfo }: MemoryCardGameProps) {
       moves={moves}
     >
       <div className="flex flex-col h-full">
+        {/* 미리보기 메시지 */}
+        {showPreview && (
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 mb-4">
+            <div className="text-center">
+              <div className="text-2xl mb-2">👀</div>
+              <p className="text-sm font-semibold text-gray-800">
+                카드 위치를 기억하세요!
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                잠시 후 카드가 뒤집힙니다
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* 게임 완료 메시지 */}
         {isGameComplete && (
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 mb-4">
@@ -149,16 +171,16 @@ export function MemoryCardGame({ onBack, userInfo }: MemoryCardGameProps) {
               <button
                 key={card.id}
                 onClick={() => handleCardClick(card.id)}
-                disabled={isChecking || card.isMatched}
+                disabled={isChecking || card.isMatched || showPreview}
                 className={`aspect-square rounded-xl text-2xl flex items-center justify-center transition-all duration-300 ${
-                  card.isFlipped || card.isMatched
+                  card.isFlipped || card.isMatched || showPreview
                     ? 'bg-white border-2 border-blue-500 shadow-sm'
                     : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
                 } ${
                   card.isMatched ? 'opacity-60' : ''
                 } active:scale-95`}
               >
-                {(card.isFlipped || card.isMatched) && card.value}
+                {(card.isFlipped || card.isMatched || showPreview) && card.value}
               </button>
             ))}
           </div>

@@ -371,16 +371,6 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
     clearPreview();
   }
 
-  function showHint() {
-    window.alert(
-      `💡 힌트 (패턴 ${patternIndex + 1})\n` +
-      `• 4x4(16칸) 보드를 모든 조각으로 채우면 완성!\n` +
-      `• 드래그 중 초록색은 배치 가능, 빨간색은 불가능\n` +
-      `• 보드에 놓인 조각은 셀을 클릭하면 회수 가능\n` +
-      `• 막히면 '정답 보기'를 눌러 배치를 관찰해봐!`
-    );
-  }
-
   function showSolution() {
     const ok = window.confirm(
       "정답을 보시겠습니까? 현재 진행 상태가 정답 배치로 바뀝니다."
@@ -393,7 +383,8 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
 
     // 정답 점수(16칸*10)
     applyScore(16 * 10);
-    setCompleted(true);
+    // 정답 보기로 완성한 경우 축하 메시지 표시하지 않음
+    // setCompleted(true); 제거
 
     window.alert(
       `🎯 패턴 ${patternIndex + 1} 정답 배치입니다.\n각 조각의 위치를 잘 관찰해보세요!`
@@ -508,12 +499,6 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
               className="px-4 py-2 rounded-full bg-orange-600 text-white font-semibold shadow hover:brightness-110 transition"
             >
               🔄 새 게임
-            </button>
-            <button
-              onClick={showHint}
-              className="px-4 py-2 rounded-full bg-blue-600 text-white font-semibold shadow hover:brightness-110 transition"
-            >
-              💡 힌트
             </button>
             <button
               onClick={showSolution}
@@ -634,21 +619,25 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  // 모달만 닫고 유지
-                  setCompleted(false);
-                }}
-                className="flex-1 px-4 py-2 rounded-full bg-zinc-200 font-semibold hover:bg-zinc-300 transition"
-              >
-                확인
-              </button>
-              <button
-                onClick={() => {
+                  // 모달 닫고 새로운 퍼즐로 시작
                   setCompleted(false);
                   resetToNewPattern();
                 }}
+                className="flex-1 px-4 py-2 rounded-full bg-zinc-200 font-semibold hover:bg-zinc-300 transition"
+              >
+                게임 계속하기
+              </button>
+              <button
+                onClick={() => {
+                  // 활동 세션 종료하고 두뇌 게임 메뉴로 이동
+                  if (currentSessionId) {
+                    endSession(currentSessionId, score, { completed, patternIndex });
+                  }
+                  onBack();
+                }}
                 className="flex-1 px-4 py-2 rounded-full bg-orange-600 text-white font-semibold hover:brightness-110 transition"
               >
-                새 게임
+                메뉴로 이동
               </button>
             </div>
           </div>

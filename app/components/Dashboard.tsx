@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { BarChart3, Trophy, Target, TrendingUp, Calendar } from 'lucide-react';
 import { getGameStats, initializeGameStats, GameStats } from '@/lib/gameStats';
 import Layout from './Layout';
 
@@ -68,7 +67,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
         <div className="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 mb-1">
-              📊 나의 통계
+              � 나의 통계
             </h1>
             <p className="text-gray-600 text-sm">두뇌 훈련 진행 상황</p>
           </div>
@@ -76,9 +75,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
             onClick={onBack}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M15 10L5 10M10 15L5 10L10 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <span className="text-xl">↩️</span>
           </button>
         </div>
 
@@ -92,7 +89,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
                   <p className="text-xl font-bold text-blue-800">{totalGamesPlayed}</p>
                 </div>
                 <div className="bg-blue-200 p-2 rounded-lg">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
+                  <span className="text-2xl">🎮</span>
                 </div>
               </div>
             </div>
@@ -104,7 +101,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
                   <p className="text-xl font-bold text-green-800">{weeklyProgress.toFixed(0)}%</p>
                 </div>
                 <div className="bg-green-200 p-2 rounded-lg">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
+                  <span className="text-2xl">📈</span>
                 </div>
               </div>
             </div>
@@ -120,7 +117,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
                   </p>
                 </div>
                 <div className="bg-yellow-200 p-2 rounded-lg">
-                  <Target className="w-4 h-4 text-yellow-600" />
+                  <span className="text-2xl">🎯</span>
                 </div>
               </div>
             </div>
@@ -134,7 +131,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
                   </p>
                 </div>
                 <div className="bg-purple-200 p-2 rounded-lg">
-                  <Trophy className="w-4 h-4 text-purple-600" />
+                  <span className="text-2xl">🏆</span>
                 </div>
               </div>
             </div>
@@ -143,7 +140,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
           {/* 주간 목표 진행률 */}
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center">
-              <Calendar className="w-4 h-4 mr-2" />
+              <span className="text-xl mr-2">🗓️</span>
               이번 주 목표
             </h2>
             <div className="mb-3">
@@ -169,7 +166,7 @@ export default function Dashboard({ userInfo, onBack }: DashboardProps) {
           {/* 게임별 상세 통계 */}
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-              <BarChart3 className="w-4 h-4 mr-2" />
+              <span className="text-xl mr-2">📊</span>
               게임별 통계
             </h2>
             

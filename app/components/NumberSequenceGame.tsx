@@ -14,7 +14,7 @@ export function NumberSequenceGame({ onBack, userInfo }: NumberSequenceGameProps
   const [sequence, setSequence] = useState<number[]>([]);
   const [userInput, setUserInput] = useState<number[]>([]);
   const [gameState, setGameState] = useState<GameState>('ready');
-  const [level, setLevel] = useState(3);
+  const [level, setLevel] = useState(1);
   const [score, setScore] = useState(0);
   const [showingIndex, setShowingIndex] = useState(0);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -25,7 +25,7 @@ export function NumberSequenceGame({ onBack, userInfo }: NumberSequenceGameProps
   };
 
   const startGame = () => {
-    generateSequence(level);
+    generateSequence(level + 2); // 레벨 1 = 3개 숫자, 레벨 2 = 4개 숫자
     setUserInput([]);
     setIsCorrect(null);
     setGameState('showing');
@@ -80,7 +80,7 @@ export function NumberSequenceGame({ onBack, userInfo }: NumberSequenceGameProps
       }, 2000);
     } else {
       setTimeout(() => {
-        setLevel(3);
+        setLevel(1);
         setScore(0);
         setGameState('ready');
       }, 2000);
@@ -98,7 +98,7 @@ export function NumberSequenceGame({ onBack, userInfo }: NumberSequenceGameProps
         {/* 레벨 정보 */}
         {gameState !== 'ready' && (
           <div className="text-center mb-4">
-            <p className="text-sm text-gray-600">레벨 {level} · {level}개 숫자</p>
+            <p className="text-sm text-gray-600">레벨 {level} · {level + 2}개 숫자</p>
           </div>
         )}
 
@@ -128,9 +128,6 @@ export function NumberSequenceGame({ onBack, userInfo }: NumberSequenceGameProps
             <div className="text-center">
               <div className="text-6xl mb-4 font-bold text-blue-600">
                 {showingIndex < sequence.length ? sequence[showingIndex] : ''}
-              </div>
-              <div className="text-gray-500 text-sm">
-                {showingIndex + 1} / {sequence.length}
               </div>
             </div>
           )}
