@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Clock } from 'lucide-react';
+import { saveGameResult } from '@/lib/gameStats';
 
 interface MathGameProps {
   onBack: () => void;
+  userInfo: { name: string; id: string };
 }
 
 type Operation = '+' | '-' | '×';
@@ -14,7 +16,7 @@ interface Question {
   answer: number;
 }
 
-export function MathGame({ onBack }: MathGameProps) {
+export function MathGame({ onBack, userInfo }: MathGameProps) {
   const [question, setQuestion] = useState<Question | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [score, setScore] = useState(0);
@@ -70,6 +72,16 @@ export function MathGame({ onBack }: MathGameProps) {
       return () => clearTimeout(timer);
     } else if (timeLeft === 0 && isGameActive) {
       setIsGameActive(false);
+      
+      // 게임 종료 시 통계 저장
+      const totalQuestions = correctCount + wrongCount;
+      const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+      
+      saveGameResult(userInfo.id, {
+        gameName: '빠른 계산',
+        score: score,
+        accuracy: accuracy
+      });
     }
   }, [isGameActive, timeLeft]);
 

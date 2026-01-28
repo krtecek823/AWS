@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Play } from 'lucide-react';
 import GameWrapper from './GameWrapper';
+import { saveGameResult } from '@/lib/gameStats';
 
 interface NumberSequenceGameProps {
   onBack: () => void;
+  userInfo: { name: string; id: string };
 }
 
 type GameState = 'ready' | 'showing' | 'input' | 'result';
 
-export function NumberSequenceGame({ onBack }: NumberSequenceGameProps) {
+export function NumberSequenceGame({ onBack, userInfo }: NumberSequenceGameProps) {
   const [sequence, setSequence] = useState<number[]>([]);
   const [userInput, setUserInput] = useState<number[]>([]);
   const [gameState, setGameState] = useState<GameState>('ready');
@@ -58,6 +60,16 @@ export function NumberSequenceGame({ onBack }: NumberSequenceGameProps) {
     const correct = input.every((num, index) => num === sequence[index]);
     setIsCorrect(correct);
     setGameState('result');
+
+    // 통계 저장
+    const accuracy = correct ? 100 : 0;
+    const gameScore = correct ? level * 5 : 0;
+    
+    saveGameResult(userInfo.id, {
+      gameName: '숫자 기억',
+      score: gameScore,
+      accuracy: accuracy
+    });
 
     if (correct) {
       const points = level * 5;

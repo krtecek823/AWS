@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Clock } from 'lucide-react';
+import { saveGameResult } from '@/lib/gameStats';
 
 interface ColorGameProps {
   onBack: () => void;
+  userInfo: { name: string; id: string };
 }
 
 type ColorName = '빨강' | '파랑' | '노랑' | '초록';
@@ -44,7 +46,7 @@ const colorLabels: Record<ColorValue, string> = {
   green: '초록',
 };
 
-export function ColorGame({ onBack }: ColorGameProps) {
+export function ColorGame({ onBack, userInfo }: ColorGameProps) {
   const [question, setQuestion] = useState<ColorQuestion | null>(null);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(45);
@@ -82,6 +84,16 @@ export function ColorGame({ onBack }: ColorGameProps) {
       return () => clearTimeout(timer);
     } else if (timeLeft === 0 && isGameActive) {
       setIsGameActive(false);
+      
+      // 게임 종료 시 통계 저장
+      const totalQuestions = correctCount + wrongCount;
+      const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+      
+      saveGameResult(userInfo.id, {
+        gameName: '색상 인식',
+        score: score,
+        accuracy: accuracy
+      });
     }
   }, [isGameActive, timeLeft]);
 

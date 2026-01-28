@@ -6,6 +6,7 @@ interface HomePageProps {
   onLogout: () => void;
   onChatbot: () => void;
   onBrainGame: () => void;
+  onDashboard: () => void;
 }
 
 interface DiagnosisQuestion {
@@ -152,9 +153,9 @@ const diagnosisQuestions: DiagnosisQuestion[] = [
   }
 ];
 
-export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }: HomePageProps) {
+export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame, onDashboard }: HomePageProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large'>('normal');
+  const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
   const [showDiagnosis, setShowDiagnosis] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -180,7 +181,7 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
   };
 
   const toggleFontSize = () => {
-    const sizes: ('small' | 'normal' | 'large')[] = ['small', 'normal', 'large'];
+    const sizes: ('normal' | 'large')[] = ['normal', 'large'];
     const currentIndex = sizes.indexOf(fontSize);
     const nextIndex = (currentIndex + 1) % sizes.length;
     setFontSize(sizes[nextIndex]);
@@ -271,7 +272,6 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
 
   const getFontSizeLabel = () => {
     switch(fontSize) {
-      case 'small': return '작게';
       case 'normal': return '보통';
       case 'large': return '크게';
       default: return '보통';
@@ -279,13 +279,11 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
   };
 
   const fontSizeClasses = {
-    small: 'text-sm',
     normal: 'text-base',
     large: 'text-lg'
   };
 
   const titleSizeClasses = {
-    small: 'text-2xl',
     normal: 'text-3xl',
     large: 'text-4xl'
   };
@@ -361,6 +359,16 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
               </svg>
               <span>{getFontSizeLabel()}</span>
             </button>
+
+            {/* 대시보드 버튼 */}
+            <button
+              onClick={onDashboard}
+              className="flex items-center gap-2 px-4 py-3 bg-purple-100 text-purple-600 rounded-xl hover:bg-purple-200 transition-all text-sm font-medium"
+              title="나의 대시보드"
+            >
+              <span className="text-lg">📊</span>
+              <span>통계</span>
+            </button>
           </div>
         </div>
 
@@ -375,7 +383,7 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
               <ChatIcon />
             </div>
             <div className="flex-1">
-              <h3 className={`${fontSize === 'large' ? 'text-xl' : fontSize === 'small' ? 'text-lg' : 'text-xl'} font-bold mb-2`}>
+              <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
                 AI 친구와 대화하기
               </h3>
               <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
@@ -396,7 +404,7 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
               <DiagnosisIcon />
             </div>
             <div className="flex-1">
-              <h3 className={`${fontSize === 'large' ? 'text-xl' : fontSize === 'small' ? 'text-lg' : 'text-xl'} font-bold mb-2`}>
+              <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
                 자가진단
               </h3>
               <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
@@ -417,7 +425,7 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame }:
               <GameIcon />
             </div>
             <div className="flex-1">
-              <h3 className={`${fontSize === 'large' ? 'text-xl' : fontSize === 'small' ? 'text-lg' : 'text-xl'} font-bold mb-2`}>
+              <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
                 두뇌 훈련 게임
               </h3>
               <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>

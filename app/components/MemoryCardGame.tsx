@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { RotateCcw } from 'lucide-react';
 import GameWrapper from './GameWrapper';
+import { saveGameResult } from '@/lib/gameStats';
 
 interface Card {
   id: number;
@@ -11,17 +12,19 @@ interface Card {
 
 interface MemoryCardGameProps {
   onBack: () => void;
+  userInfo: { name: string; id: string };
 }
 
 const emojis = ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🥝'];
 
-export function MemoryCardGame({ onBack }: MemoryCardGameProps) {
+export function MemoryCardGame({ onBack, userInfo }: MemoryCardGameProps) {
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [matches, setMatches] = useState(0);
   const [score, setScore] = useState(0);
   const [isChecking, setIsChecking] = useState(false);
+  const [gameCompleted, setGameCompleted] = useState(false);
 
   const initializeGame = () => {
     const shuffledEmojis = [...emojis, ...emojis]
@@ -37,6 +40,7 @@ export function MemoryCardGame({ onBack }: MemoryCardGameProps) {
     setMoves(0);
     setMatches(0);
     setScore(0);
+    setGameCompleted(false);
   };
 
   useEffect(() => {
@@ -94,6 +98,26 @@ export function MemoryCardGame({ onBack }: MemoryCardGameProps) {
   };
 
   const isGameComplete = matches === emojis.length;
+
+  // 게임 완료 시 통계 저장
+  useEffect(() => {
+    if (isGameComplete && !gameCompleted) {
+      setGameCompleted(true);
+      
+      // 정확도 계산 (적은 움직임일수록 높은 정확도)
+      const maxMoves = emojis.length * 2; // 최대 가능한 움직임
+      const accuracy = Math.max(0, Math.min(100, ((maxMoves - moves) / maxMoves) * 100));
+      
+      // 점수 계산 (매칭 수 * 10 - 추가 움직임)
+      const finalScore = Math.max(0, matches * 10 - Math.max(0, moves - emojis.length));
+      
+      saveGameResult(userInfo.id, {
+        gameName: '카드 매칭',
+        score: finalScore,
+        accuracy: accuracy
+      });
+    }
+  }, [isGameComplete, gameCompleted, matches, moves, userInfo.id]);
 
   return (
     <GameWrapper 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AuthPage from '@/app/components/AuthPage';
 import HomePage from '@/app/components/HomePage';
 import ChatbotPage from '@/app/components/ChatbotPage';
+import Dashboard from '@/app/components/Dashboard';
 import Layout from '@/app/components/Layout';
 import InstallPrompt from '@/app/components/InstallPrompt';
 import { GameMenu } from '@/app/components/GameMenu';
@@ -12,7 +13,7 @@ import { MathGame } from '@/app/components/MathGame';
 import { ColorGame } from '@/app/components/ColorGame';
 
 export type GameType = 'menu' | 'memory' | 'sequence' | 'math' | 'color' | 'kiro';
-type PageType = 'auth' | 'home' | 'chatbot' | 'braingame';
+type PageType = 'auth' | 'home' | 'chatbot' | 'braingame' | 'dashboard';
 
 interface UserInfo {
   name: string;
@@ -43,6 +44,10 @@ export default function App() {
   const handleBrainGame = () => {
     setCurrentPage('braingame');
     setCurrentGame('menu');
+  };
+
+  const handleDashboard = () => {
+    setCurrentPage('dashboard');
   };
 
   const handleBackToHome = () => {
@@ -79,9 +84,20 @@ export default function App() {
           onLogout={handleLogout}
           onChatbot={handleChatbot}
           onBrainGame={handleBrainGame}
+          onDashboard={handleDashboard}
         />
         <InstallPrompt />
       </>
+    );
+  }
+
+  // 대시보드 페이지
+  if (currentPage === 'dashboard') {
+    return (
+      <Dashboard 
+        userInfo={userInfo!}
+        onBack={handleBackToHome}
+      />
     );
   }
 
@@ -108,19 +124,19 @@ export default function App() {
             />
           )}
           {currentGame === 'memory' && (
-            <MemoryCardGame onBack={handleBackToGameMenu} />
+            <MemoryCardGame onBack={handleBackToGameMenu} userInfo={userInfo!} />
           )}
           {currentGame === 'sequence' && (
-            <NumberSequenceGame onBack={handleBackToGameMenu} />
+            <NumberSequenceGame onBack={handleBackToGameMenu} userInfo={userInfo!} />
           )}
           {currentGame === 'math' && (
-            <MathGame onBack={handleBackToGameMenu} />
+            <MathGame onBack={handleBackToGameMenu} userInfo={userInfo!} />
           )}
           {currentGame === 'color' && (
-            <ColorGame onBack={handleBackToGameMenu} />
+            <ColorGame onBack={handleBackToGameMenu} userInfo={userInfo!} />
           )}
           {currentGame === 'kiro' && (
-            <KiroPuzzleGame onBack={handleBackToGameMenu} />
+            <KiroPuzzleGame onBack={handleBackToGameMenu} userInfo={userInfo!} />
           )}
         </div>
       </Layout>

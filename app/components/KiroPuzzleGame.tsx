@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import { saveGameResult } from '@/lib/gameStats';
 
 type GameProps = {
   onBack: () => void;
+  userInfo: { name: string; id: string };
 };
 
 type Cell = number | null;
@@ -130,7 +132,7 @@ function isInsideBoard(r: number, c: number) {
   return r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE;
 }
 
-export default function KiroPuzzleGame({ onBack }: GameProps) {
+export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [patternIndex, setPatternIndex] = useState<number>(0); // 0-based
   const [currentPattern, setCurrentPattern] = useState<number[][]>(solutionPatterns[0]);
@@ -250,8 +252,20 @@ export default function KiroPuzzleGame({ onBack }: GameProps) {
 
   // board 상태가 바뀔 때 완성 체크
   useEffect(() => {
-    if (isBoardComplete(board)) setCompleted(true);
-  }, [board]);
+    if (isBoardComplete(board) && !completed) {
+      setCompleted(true);
+      
+      // 게임 완료 시 통계 저장
+      const accuracy = 100; // 퍼즐 완성 시 100% 정확도
+      const gameScore = score;
+      
+      saveGameResult(userInfo.id, {
+        gameName: 'Kiro 퍼즐',
+        score: gameScore,
+        accuracy: accuracy
+      });
+    }
+  }, [board, completed, score, userInfo.id]);
 
   function getBoardCellAtPointer(clientX: number, clientY: number) {
     const el = boardRef.current;
