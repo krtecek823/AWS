@@ -156,7 +156,7 @@ const diagnosisQuestions: DiagnosisQuestion[] = [
 
 export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onSettings }: HomePageProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
+  const [fontSize, setFontSize] = useState<'normal' | 'large'>('large');
   const [showDiagnosis, setShowDiagnosis] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -180,13 +180,6 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
     const dayName = days[currentTime.getDay()];
     
     return `${year}년 ${month}월 ${date}일 ${dayName}`;
-  };
-
-  const toggleFontSize = () => {
-    const sizes: ('normal' | 'large')[] = ['normal', 'large'];
-    const currentIndex = sizes.indexOf(fontSize);
-    const nextIndex = (currentIndex + 1) % sizes.length;
-    setFontSize(sizes[nextIndex]);
   };
 
   const startDiagnosis = () => {
@@ -276,9 +269,9 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
 
   const getFontSizeLabel = () => {
     switch(fontSize) {
-      case 'normal': return '보통';
+      case 'normal': return '';
       case 'large': return '크게';
-      default: return '보통';
+      default: return '';
     }
   };
 
@@ -323,8 +316,8 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
   return (
     <Layout isUserMode={true}>
       <div className="h-full flex flex-col">
-        {/* 헤더 - 파란색 배경 */}
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6">
+        {/* 헤더 - 단색 파란색 배경 */}
+        <div className="bg-blue-500 text-white p-6">
           <div className="flex justify-between items-start mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
@@ -361,19 +354,6 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
             </div>
             
             <div className="flex flex-col gap-3">
-              {/* 글씨 크기 조절 버튼 */}
-              <button
-                onClick={toggleFontSize}
-                className="flex items-center gap-2 px-4 py-3 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all text-sm font-medium"
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <text x="2" y="8" fontSize="6" fill="currentColor">A</text>
-                  <text x="8" y="12" fontSize="8" fill="currentColor">A</text>
-                  <text x="13" y="16" fontSize="10" fill="currentColor">A</text>
-                </svg>
-                <span>{getFontSizeLabel()}</span>
-              </button>
-
               {/* 설정 버튼 */}
               <button
                 onClick={onSettings}
@@ -394,10 +374,10 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
         <div className="flex-1 overflow-y-auto p-6">
           {/* 기능 카드들 */}
           <div className="space-y-6 mb-6">
-            {/* AI 챗봇 카드 */}
+            {/* AI 챗봇 카드 - 핑크색 파스텔 톤 */}
             <div
               onClick={onChatbot}
-              className="bg-gradient-to-r from-pink-200 to-pink-300 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+              className="bg-pink-50 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5 border border-pink-300"
             >
               <div className="flex-shrink-0">
                 <ChatIcon />
@@ -415,10 +395,10 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
               </div>
             </div>
 
-            {/* 자가진단 카드 */}
+            {/* 자가진단 카드 - 주황색 파스텔 톤 */}
             <div
               onClick={startDiagnosis}
-              className="bg-gradient-to-r from-purple-200 to-purple-300 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+              className="bg-orange-50 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5 border border-orange-300"
             >
               <div className="flex-shrink-0">
                 <DiagnosisIcon />
@@ -436,10 +416,10 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
               </div>
             </div>
 
-            {/* 두뇌 훈련 게임 카드 */}
+            {/* 두뇌 훈련 게임 카드 - 초록색 파스텔 톤 */}
             <div
               onClick={onBrainGame}
-              className="bg-gradient-to-r from-blue-200 to-blue-300 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+              className="bg-green-50 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5 border border-green-300"
             >
               <div className="flex-shrink-0">
                 <GameIcon />
