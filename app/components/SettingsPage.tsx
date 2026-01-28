@@ -155,7 +155,7 @@ export default function SettingsPage({ userInfo, onBack, onLogout }: SettingsPag
             <div className="flex items-center justify-between py-3 border-b border-gray-100">
               <span className={`${fontSizeClasses[fontSize]} text-gray-600`}>앱 이름</span>
               <span className={`${fontSizeClasses[fontSize]} font-medium text-gray-800`}>
-                마음 케어
+                똑똑똑
               </span>
             </div>
             <div className="flex items-center justify-between py-3 border-b border-gray-100">

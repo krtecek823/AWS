@@ -78,6 +78,6 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('마음 케어', options)
+    self.registration.showNotification('똑똑똑', options)
   );
 });
