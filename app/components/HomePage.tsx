@@ -397,7 +397,7 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
             {/* AI 챗봇 카드 */}
             <div
               onClick={onChatbot}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+              className="bg-gradient-to-r from-pink-200 to-pink-300 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
             >
               <div className="flex-shrink-0">
                 <ChatIcon />
@@ -418,7 +418,7 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
             {/* 자가진단 카드 */}
             <div
               onClick={startDiagnosis}
-              className="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+              className="bg-gradient-to-r from-purple-200 to-purple-300 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
             >
               <div className="flex-shrink-0">
                 <DiagnosisIcon />
@@ -439,7 +439,7 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
             {/* 두뇌 훈련 게임 카드 */}
             <div
               onClick={onBrainGame}
-              className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+              className="bg-gradient-to-r from-blue-200 to-blue-300 rounded-2xl p-6 text-gray-700 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
             >
               <div className="flex-shrink-0">
                 <GameIcon />

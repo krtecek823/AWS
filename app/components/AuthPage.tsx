@@ -109,7 +109,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
         {/* 로고 및 타이틀 */}
         <div className="text-center mb-10">
           <HeartIcon />
-          <h1 className="text-3xl font-bold text-gray-800 mb-3">인지 케어</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-3">똑똑똑</h1>
           <p className="text-gray-600 leading-relaxed">
             매일 당신과 함께하는<br />건강한 일상
           </p>
