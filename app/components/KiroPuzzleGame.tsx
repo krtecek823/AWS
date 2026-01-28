@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useActivity } from '@/app/contexts/ActivityContext';
 import { saveGameResult } from '@/lib/gameStats';
 
 type GameProps = {
@@ -146,6 +147,8 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
   const [completed, setCompleted] = useState(false);
+  const { startSession, endSession } = useActivity();
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
   // const placedIds = useMemo(
   //   () => new Set(pieces.filter((p) => p.placed).map((p) => p.id)),
@@ -176,8 +179,19 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
   }
 
   useEffect(() => {
+    // 게임 세션 시작
+    const sessionId = startSession('game', 'kiro');
+    setCurrentSessionId(sessionId);
+    
     // 첫 로드: 랜덤 패턴 시작
     resetToNewPattern();
+    
+    // 컴포넌트 언마운트 시 세션 종료
+    return () => {
+      if (sessionId) {
+        endSession(sessionId, score, { completed, patternIndex });
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -264,8 +278,13 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
         score: gameScore,
         accuracy: accuracy
       });
+      
+      // 활동 세션 업데이트
+      if (currentSessionId) {
+        endSession(currentSessionId, gameScore, { completed: true, patternIndex });
+      }
     }
-  }, [board, completed, score, userInfo.id]);
+  }, [board, completed, score, userInfo.id, currentSessionId, patternIndex, endSession]);
 
   function getBoardCellAtPointer(clientX: number, clientY: number) {
     const el = boardRef.current;
@@ -389,7 +408,13 @@ export default function KiroPuzzleGame({ onBack, userInfo }: GameProps) {
       <div className="w-full max-w-5xl flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <button
-            onClick={onBack}
+            onClick={() => {
+              // 활동 세션 종료
+              if (currentSessionId) {
+                endSession(currentSessionId, score, { completed, patternIndex });
+              }
+              onBack();
+            }}
             className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-muted transition"
           >
             ← 메뉴

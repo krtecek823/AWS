@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useActivity } from '@/app/contexts/ActivityContext';
 import Layout from './Layout';
 
 interface ChatbotPageProps {
@@ -35,11 +36,13 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
   const [interimTranscript, setInterimTranscript] = useState('');
   const [currentBotResponse, setCurrentBotResponse] = useState('');
   const [apiSession, setApiSession] = useState<ApiSession | null>(null);
-  const [sessionStarted, setSessionStarted] = useState(false);
+  // const [sessionStarted, setSessionStarted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const { startSession: startActivitySession, endSession: endActivitySession } = useActivity();
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
   // API 함수들
   const startSession = async (): Promise<ApiSession | null> => {
@@ -124,10 +127,14 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
   // 컴포넌트 초기화 시 세션 시작
   useEffect(() => {
     const initializeSession = async () => {
+      // 활동 세션 시작
+      const activitySessionId = startActivitySession('chat');
+      setCurrentSessionId(activitySessionId);
+      
       const session = await startSession();
       if (session) {
         setApiSession(session);
-        setSessionStarted(true);
+        // setSessionStarted(true);
         
         // 초기 환영 메시지 추가
         const welcomeMessage: Message = {
@@ -156,6 +163,10 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
     return () => {
       if (apiSession) {
         endSession();
+      }
+      // 활동 세션 종료
+      if (currentSessionId) {
+        endActivitySession(currentSessionId, undefined, { messageCount: messages.length });
       }
     };
   }, []);
@@ -437,6 +448,10 @@ export default function ChatbotPage({ userInfo, onBack }: ChatbotPageProps) {
               // 세션 종료 후 뒤로가기
               if (apiSession) {
                 await endSession();
+              }
+              // 활동 세션 종료
+              if (currentSessionId) {
+                endActivitySession(currentSessionId, undefined, { messageCount: messages.length });
               }
               onBack();
             }}

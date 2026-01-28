@@ -4,7 +4,13 @@ import Button from './ui/Button';
 import Input from './ui/Input';
 
 interface AuthPageProps {
-  onLogin: (userInfo: { name: string; id: string }) => void;
+  onLogin: (userInfo: { 
+    name: string; 
+    id: string;
+    age?: number;
+    gender?: string;
+    guardianPhone?: string;
+  }) => void;
 }
 
 interface LoginData {
@@ -57,8 +63,20 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
       return;
     }
     
+    // 실제로는 서버에서 사용자 정보를 가져와야 하지만, 
+    // 데모용으로 회원가입 데이터를 사용합니다
     const userName = signupData.name || '사용자';
-    onLogin({ name: userName, id: loginData.id });
+    const userAge = signupData.age ? parseInt(signupData.age) : undefined;
+    const userGender = signupData.gender || undefined;
+    const guardianPhone = signupData.familyPhone || undefined;
+    
+    onLogin({ 
+      name: userName, 
+      id: loginData.id,
+      age: userAge,
+      gender: userGender,
+      guardianPhone: guardianPhone
+    });
   };
 
   const handleSignupSubmit = (e: React.FormEvent) => {

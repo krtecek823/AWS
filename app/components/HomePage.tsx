@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useActivity } from '@/app/contexts/ActivityContext';
 import Layout from './Layout';
 
 interface HomePageProps {
   userInfo: { name: string; id: string };
-  onLogout: () => void;
+  onBack: () => void;
   onChatbot: () => void;
   onBrainGame: () => void;
-  onDashboard: () => void;
+  onSettings: () => void;
 }
 
 interface DiagnosisQuestion {
@@ -153,13 +154,14 @@ const diagnosisQuestions: DiagnosisQuestion[] = [
   }
 ];
 
-export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame, onDashboard }: HomePageProps) {
+export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onSettings }: HomePageProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
   const [showDiagnosis, setShowDiagnosis] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
+  const { addDiagnosisResult } = useActivity();
 
   // 실시간 시간 업데이트
   useEffect(() => {
@@ -201,7 +203,9 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame, o
     if (currentQuestion < diagnosisQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // 진단 완료 - 결과 화면 표시
+      // 진단 완료 - 결과를 ActivityContext에 저장
+      const totalScore = newAnswers.reduce((sum, answer) => sum + answer, 0);
+      addDiagnosisResult(totalScore, newAnswers);
       setShowResult(true);
     }
   };
@@ -225,7 +229,7 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame, o
 
   const getResultMessage = () => {
     const score = getTotalScore();
-    if (score <= 8) {
+    if (score <= 5) {
       return {
         emoji: "🧑🏻‍💼",
         message: "인지 기능이 매우 좋습니다! 젊은 마음으로 활기차게 생활하고 계시네요.",
@@ -339,11 +343,11 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame, o
           <div className="flex flex-col gap-3">
             {/* 뒤로가기 버튼 */}
             <button
-              onClick={onLogout}
+              onClick={onBack}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M9 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H9M13 7L17 11M17 11L13 15M17 11H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
             
@@ -360,14 +364,17 @@ export default function HomePage({ userInfo, onLogout, onChatbot, onBrainGame, o
               <span>{getFontSizeLabel()}</span>
             </button>
 
-            {/* 대시보드 버튼 */}
+            {/* 설정 버튼 */}
             <button
-              onClick={onDashboard}
-              className="flex items-center gap-2 px-4 py-3 bg-purple-100 text-purple-600 rounded-xl hover:bg-purple-200 transition-all text-sm font-medium"
-              title="나의 대시보드"
+              onClick={onSettings}
+              className="flex items-center gap-2 px-4 py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-all text-sm font-medium"
+              title="설정"
             >
-              <span className="text-lg">📊</span>
-              <span>통계</span>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M16.25 10C16.25 10.625 16.125 11.25 15.875 11.875L17.5 13.125C17.625 13.25 17.625 13.5 17.5 13.625L15.875 16.375C15.75 16.5 15.5 16.5 15.375 16.375L13.625 15.125C13 15.375 12.375 15.5 11.75 15.5V17.5C11.75 17.625 11.625 17.75 11.5 17.75H8.5C8.375 17.75 8.25 17.625 8.25 17.5V15.5C7.625 15.5 7 15.375 6.375 15.125L4.625 16.375C4.5 16.5 4.25 16.5 4.125 16.375L2.5 13.625C2.375 13.5 2.375 13.25 2.5 13.125L4.125 11.875C3.875 11.25 3.75 10.625 3.75 10C3.75 9.375 3.875 8.75 4.125 8.125L2.5 6.875C2.375 6.75 2.375 6.5 2.5 6.375L4.125 3.625C4.25 3.5 4.5 3.5 4.625 3.625L6.375 4.875C7 4.625 7.625 4.5 8.25 4.5V2.5C8.25 2.375 8.375 2.25 8.5 2.25H11.5C11.625 2.25 11.75 2.375 11.75 2.5V4.5C12.375 4.5 13 4.625 13.625 4.875L15.375 3.625C15.5 3.5 15.75 3.5 15.875 3.625L17.5 6.375C17.625 6.5 17.625 6.75 17.5 6.875L15.875 8.125C16.125 8.75 16.25 9.375 16.25 10Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>설정</span>
             </button>
           </div>
         </div>
