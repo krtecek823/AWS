@@ -8,6 +8,7 @@ interface SettingsPageProps {
     age?: number;
     gender?: string;
     guardianPhone?: string;
+    guardianPin?: string;
   };
   onBack: () => void;
   onLogout: () => void;
@@ -88,27 +89,27 @@ export default function SettingsPage({ userInfo, onBack, onLogout }: SettingsPag
               </span>
             </div>
             
-            {/* 나이 */}
-            <div className="flex items-center justify-between py-3 border-b border-gray-100">
-              <span className={`${fontSizeClasses[fontSize]} text-gray-600`}>나이</span>
-              <span className={`${fontSizeClasses[fontSize]} font-medium text-gray-800`}>
-                {userInfo.age || '미입력'}세
-              </span>
-            </div>
-            
             {/* 성별 */}
             <div className="flex items-center justify-between py-3 border-b border-gray-100">
               <span className={`${fontSizeClasses[fontSize]} text-gray-600`}>성별</span>
               <span className={`${fontSizeClasses[fontSize]} font-medium text-gray-800`}>
-                {userInfo.gender || '미입력'}
+                {userInfo.gender === 'male' ? '남성' : userInfo.gender === 'female' ? '여성' : '미입력'}
               </span>
             </div>
             
             {/* 보호자 연락처 */}
-            <div className="flex items-center justify-between py-3">
+            <div className="flex items-center justify-between py-3 border-b border-gray-100">
               <span className={`${fontSizeClasses[fontSize]} text-gray-600`}>보호자 연락처</span>
               <span className={`${fontSizeClasses[fontSize]} font-medium text-gray-800`}>
                 {userInfo.guardianPhone || '미입력'}
+              </span>
+            </div>
+            
+            {/* 보호자 PIN */}
+            <div className="flex items-center justify-between py-3">
+              <span className={`${fontSizeClasses[fontSize]} text-gray-600`}>보호자 PIN</span>
+              <span className={`${fontSizeClasses[fontSize]} font-medium text-gray-800`}>
+                {userInfo.guardianPin ? '••••' : '미설정'}
               </span>
             </div>
           </div>

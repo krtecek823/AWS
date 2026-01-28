@@ -23,9 +23,9 @@ type UserRole = 'user' | 'guardian';
 interface UserInfo {
   name: string;
   id: string;
-  age?: number;
   gender?: string;
   guardianPhone?: string;
+  guardianPin?: string;
 }
 
 export default function App() {

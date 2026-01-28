@@ -10,6 +10,7 @@ interface AuthPageProps {
     age?: number;
     gender?: string;
     guardianPhone?: string;
+    guardianPin?: string;
   }) => void;
 }
 
@@ -22,9 +23,9 @@ interface SignupData {
   id: string;
   password: string;
   name: string;
-  age: string;
   gender: string;
   familyPhone: string;
+  guardianPin: string;
 }
 
 export default function AuthPage({ onLogin }: AuthPageProps) {
@@ -37,9 +38,9 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
     id: '',
     password: '',
     name: '',
-    age: '',
     gender: '',
-    familyPhone: ''
+    familyPhone: '',
+    guardianPin: ''
   });
 
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,27 +67,27 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
     // 실제로는 서버에서 사용자 정보를 가져와야 하지만, 
     // 데모용으로 회원가입 데이터를 사용합니다
     const userName = signupData.name || '사용자';
-    const userAge = signupData.age ? parseInt(signupData.age) : undefined;
     const userGender = signupData.gender || undefined;
     const guardianPhone = signupData.familyPhone || undefined;
+    const guardianPin = signupData.guardianPin || undefined;
     
     onLogin({ 
       name: userName, 
       id: loginData.id,
-      age: userAge,
       gender: userGender,
-      guardianPhone: guardianPhone
+      guardianPhone: guardianPhone,
+      guardianPin: guardianPin
     });
   };
 
   const handleSignupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signupData.id || !signupData.password || !signupData.name || !signupData.age || !signupData.gender || !signupData.familyPhone) {
+    if (!signupData.id || !signupData.password || !signupData.name || !signupData.gender || !signupData.familyPhone || !signupData.guardianPin) {
       alert('모든 정보를 입력해주세요.');
       return;
     }
-    if (parseInt(signupData.age) < 1 || parseInt(signupData.age) > 120) {
-      alert('올바른 나이를 입력해주세요.');
+    if (signupData.guardianPin.length !== 4 || !/^\d{4}$/.test(signupData.guardianPin)) {
+      alert('보호자 PIN은 4자리 숫자여야 합니다.');
       return;
     }
     
@@ -182,15 +183,6 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
               value={signupData.name}
               onChange={handleSignupChange}
             />
-            <Input
-              type="number"
-              name="age"
-              placeholder="나이"
-              min="1"
-              max="120"
-              value={signupData.age}
-              onChange={handleSignupChange}
-            />
             <select
               name="gender"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -206,6 +198,14 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
               name="familyPhone"
               placeholder="가족자 대표번호"
               value={signupData.familyPhone}
+              onChange={handleSignupChange}
+            />
+            <Input
+              type="password"
+              name="guardianPin"
+              placeholder="보호자 PIN (4자리 숫자)"
+              maxLength={4}
+              value={signupData.guardianPin}
               onChange={handleSignupChange}
             />
             <Button type="submit" className="w-full" size="lg">

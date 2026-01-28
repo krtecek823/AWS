@@ -83,10 +83,16 @@ export default function GuardianDashboard({ userInfo, onBack, onLogout }: Guardi
     const score = latestDiagnosis.score;
     if (score <= 5) {
       return { status: '우수', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200' };
+    } else if (score <= 10) {
+      return { status: '매우양호', color: 'text-emerald-600', bgColor: 'bg-emerald-50', borderColor: 'border-emerald-200' };
     } else if (score <= 16) {
       return { status: '양호', color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' };
+    } else if (score <= 20) {
+      return { status: '경미한 변화', color: 'text-yellow-600', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' };
+    } else if (score <= 25) {
+      return { status: '주의 필요', color: 'text-orange-600', bgColor: 'bg-orange-50', borderColor: 'border-orange-200' };
     } else {
-      return { status: '주의', color: 'text-orange-600', bgColor: 'bg-orange-50', borderColor: 'border-orange-200' };
+      return { status: '심각한 변화', color: 'text-red-600', bgColor: 'bg-red-50', borderColor: 'border-red-200' };
     }
   };
 
@@ -176,8 +182,206 @@ export default function GuardianDashboard({ userInfo, onBack, onLogout }: Guardi
           ))}
         </div>
 
+        {/* 종합 소견 */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            🩺 종합 소견
+          </h3>
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+              <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
+                📊 활동 분석
+              </h4>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                최근 7일간 총 {stats.totalTime}분 활동하셨으며, 일평균 {stats.avgDailyTime}분의 꾸준한 참여를 보이고 있습니다. 
+                AI 대화 {stats.totalChatSessions}회, 두뇌 게임 {stats.totalGameSessions}회로 균형잡힌 활동 패턴을 유지하고 계십니다.
+              </p>
+            </div>
+            
+            {healthStatus && (
+              <div className={`${healthStatus.bgColor} ${healthStatus.borderColor} border rounded-lg p-4`}>
+                <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
+                  🧠 인지 상태 평가
+                </h4>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  최근 자가진단 결과 <span className={`font-semibold ${healthStatus.color}`}>{healthStatus.status}</span> 등급으로 평가되었습니다. 
+                  {healthStatus.status === '우수' && '매우 양호한 인지 기능을 유지하고 계시며, 현재 상태를 지속하시기 바랍니다.'}
+                  {healthStatus.status === '매우양호' && '인지 기능이 매우 양호한 상태입니다. 꾸준한 두뇌 활동을 통해 현재 상태를 유지하시기 바랍니다.'}
+                  {healthStatus.status === '양호' && '나이에 맞는 자연스러운 변화 수준으로, 꾸준한 두뇌 활동을 통해 건강을 유지하시기 바랍니다.'}
+                  {healthStatus.status === '경미한 변화' && '경미한 인지 변화가 관찰됩니다. 규칙적인 두뇌 활동과 사회적 교류를 늘려주시기 바랍니다.'}
+                  {healthStatus.status === '주의 필요' && '주의가 필요한 변화가 관찰되므로 전문의 상담을 권장하며, 가족과 함께하는 활동을 늘려주시기 바랍니다.'}
+                  {healthStatus.status === '심각한 변화' && '심각한 인지 변화가 관찰됩니다. 즉시 전문의 상담을 받으시고 적극적인 관리가 필요합니다.'}
+                </p>
+              </div>
+            )}
+            
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+              <h4 className="font-medium text-gray-800 mb-4 flex items-center gap-2">
+                📋 자가진단 주간 추이
+              </h4>
+              {weeklyStats.recentDiagnosisResults && weeklyStats.recentDiagnosisResults.length > 0 ? (
+                <div className="space-y-4">
+                  {/* 그래프 영역 */}
+                  <div className="relative h-40 bg-white rounded-lg border border-purple-200 p-4">
+                    {/* 막대 그래프 */}
+                    <div className="h-full flex items-end justify-between px-4">
+                      {Array.from({ length: 7 }, (_, index) => {
+                        const date = new Date();
+                        date.setDate(date.getDate() - (6 - index));
+                        const dateStr = date.toISOString().split('T')[0];
+                        
+                        // 해당 날짜의 진단 결과 찾기
+                        const diagnosisResult = weeklyStats.recentDiagnosisResults.find((result: any) => 
+                          result.date.toISOString().split('T')[0] === dateStr
+                        );
+                        
+                        const score = diagnosisResult?.score || 0;
+                        const hasData = !!diagnosisResult;
+                        
+                        // 높이를 30점 기준으로 계산 (최소 높이 8px)
+                        const barHeight = hasData ? Math.max((score / 30) * 100, 3) : 0;
+                        
+                        // 점수에 따른 색상 결정 (더 세밀한 그라데이션)
+                        let barColor = 'bg-gray-200';
+                        let shadowColor = 'shadow-gray-200';
+                        
+                        if (hasData) {
+                          if (score <= 5) {
+                            barColor = 'bg-gradient-to-t from-green-500 to-green-400';
+                            shadowColor = 'shadow-green-300';
+                          } else if (score <= 10) {
+                            barColor = 'bg-gradient-to-t from-emerald-500 to-emerald-400';
+                            shadowColor = 'shadow-emerald-300';
+                          } else if (score <= 16) {
+                            barColor = 'bg-gradient-to-t from-blue-500 to-blue-400';
+                            shadowColor = 'shadow-blue-300';
+                          } else if (score <= 20) {
+                            barColor = 'bg-gradient-to-t from-yellow-500 to-yellow-400';
+                            shadowColor = 'shadow-yellow-300';
+                          } else if (score <= 25) {
+                            barColor = 'bg-gradient-to-t from-orange-500 to-orange-400';
+                            shadowColor = 'shadow-orange-300';
+                          } else {
+                            barColor = 'bg-gradient-to-t from-red-500 to-red-400';
+                            shadowColor = 'shadow-red-300';
+                          }
+                        }
+                        
+                        return (
+                          <div key={dateStr} className="flex flex-col items-center flex-1 relative">
+                            {/* 막대 */}
+                            <div className="relative flex items-end justify-center w-full h-full">
+                              {hasData && (
+                                <>
+                                  {/* 점수 표시 */}
+                                  <div className="absolute -top-8 text-xs font-bold text-gray-700 bg-white px-2 py-1 rounded-md shadow-sm border z-10">
+                                    {score}점
+                                  </div>
+                                  {/* 막대 */}
+                                  <div 
+                                    className={`w-8 rounded-t-lg transition-all duration-500 ease-out ${barColor} ${shadowColor} shadow-lg border border-white/20`}
+                                    style={{ 
+                                      height: `${barHeight}%`,
+                                      minHeight: hasData ? '8px' : '0px'
+                                    }}
+                                  >
+                                    {/* 막대 내부 하이라이트 효과 */}
+                                    <div className="w-full h-full rounded-t-lg bg-gradient-to-r from-white/20 to-transparent"></div>
+                                  </div>
+                                </>
+                              )}
+                              {!hasData && (
+                                <div className="w-8 h-2 bg-gray-200 rounded-full opacity-50"></div>
+                              )}
+                            </div>
+                            
+                            {/* 날짜 표시 */}
+                            <div className="text-xs text-gray-600 mt-3 text-center">
+                              <div className="font-medium">
+                                {date.getMonth() + 1}/{date.getDate()}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {['일', '월', '화', '수', '목', '금', '토'][date.getDay()]}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* 범례 */}
+                  <div className="flex justify-center gap-3 text-xs flex-wrap">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-gradient-to-t from-green-500 to-green-400 rounded"></div>
+                      <span className="text-gray-600">우수 (0-5점)</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-gradient-to-t from-emerald-500 to-emerald-400 rounded"></div>
+                      <span className="text-gray-600">매우양호 (6-10점)</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-gradient-to-t from-blue-500 to-blue-400 rounded"></div>
+                      <span className="text-gray-600">양호 (11-16점)</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-gradient-to-t from-yellow-500 to-yellow-400 rounded"></div>
+                      <span className="text-gray-600">경미 (17-20점)</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-gradient-to-t from-orange-500 to-orange-400 rounded"></div>
+                      <span className="text-gray-600">주의 (21-25점)</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-gradient-to-t from-red-500 to-red-400 rounded"></div>
+                      <span className="text-gray-600">심각 (26-30점)</span>
+                    </div>
+                  </div>
+                  
+                  {/* 최근 진단 정보 */}
+                  {weeklyStats.latestDiagnosis && (
+                    <div className="mt-3 pt-3 border-t border-purple-200">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">최근 진단:</span>
+                        <span className="font-medium text-gray-800">
+                          {weeklyStats.latestDiagnosis.date.toLocaleDateString('ko-KR', {
+                            month: 'short',
+                            day: 'numeric'
+                          })} - {weeklyStats.latestDiagnosis.score}점
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                        15개 문항에 대한 응답을 종합하여 산출된 점수입니다. 
+                        정기적인 자가진단을 통해 인지 기능 변화를 모니터링하고 있습니다.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <div className="text-4xl mb-2">📊</div>
+                  <p className="text-sm">아직 자가진단 결과가 없습니다.</p>
+                  <p className="text-xs text-gray-400 mt-1">자가진단을 완료하면 주간 추이를 확인할 수 있습니다.</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+              <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
+                💡 권장사항
+              </h4>
+              <div className="text-sm text-gray-700 space-y-1">
+                <p>• 현재의 규칙적인 활동 패턴을 유지하시기 바랍니다</p>
+                <p>• 다양한 두뇌 게임을 통해 인지 기능 향상에 도움이 되고 있습니다</p>
+                <p>• AI 대화를 통한 소통 활동이 정서적 안정에 기여하고 있습니다</p>
+                {stats.avgDailyTime < 30 && <p>• 일일 활동 시간을 30분 이상으로 늘려보시는 것을 권장합니다</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 주요 통계 카드들 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {/* 총 활동 시간 */}
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white">
             <div className="flex items-center justify-between mb-2">
@@ -207,18 +411,6 @@ export default function GuardianDashboard({ userInfo, onBack, onLogout }: Guardi
             <div className="text-2xl font-bold">{stats.totalGameSessions}회</div>
             <div className="text-sm opacity-90">7일간 총 세션</div>
           </div>
-
-          {/* 건강 상태 */}
-          {healthStatus && (
-            <div className={`${healthStatus.bgColor} ${healthStatus.borderColor} border rounded-xl p-4`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600">인지 상태</span>
-                <span className="text-2xl">🧠</span>
-              </div>
-              <div className={`text-2xl font-bold ${healthStatus.color}`}>{healthStatus.status}</div>
-              <div className="text-sm text-gray-600">최근 자가진단 결과</div>
-            </div>
-          )}
         </div>
 
         {/* 일별 활동 차트 */}
@@ -264,80 +456,6 @@ export default function GuardianDashboard({ userInfo, onBack, onLogout }: Guardi
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* 게임별 상세 통계 */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">게임별 성과</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(weeklyStats.gameStats).map(([gameKey, stats]) => {
-              const gameNames = {
-                memory: '카드 매칭',
-                sequence: '숫자 기억',
-                math: '빠른 계산',
-                color: '색상 인식',
-                kiro: 'Kiro 퍼즐'
-              };
-              
-              const gameEmojis = {
-                memory: '🃏',
-                sequence: '🔢',
-                math: '🧮',
-                color: '🎨',
-                kiro: '🧩'
-              };
-
-              return (
-                <div key={gameKey} className="bg-gray-50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xl">{gameEmojis[gameKey as keyof typeof gameEmojis]}</span>
-                    <span className="font-medium text-gray-800">
-                      {gameNames[gameKey as keyof typeof gameNames]}
-                    </span>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">플레이 횟수</span>
-                      <span className="font-medium">{stats.played}회</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">평균 점수</span>
-                      <span className="font-medium">{stats.avgScore}점</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">최고 점수</span>
-                      <span className="font-medium text-green-600">{stats.bestScore}점</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 건강 권장사항 */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            💡 건강 관리 권장사항
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-700">활동 패턴 분석</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• 일평균 {stats.avgDailyTime}분 활동 중 (권장: 30-60분)</li>
-                <li>• AI 대화를 통한 소통 활발</li>
-                <li>• 다양한 두뇌 게임 참여 중</li>
-              </ul>
-            </div>
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-700">개선 제안</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• 매일 꾸준한 활동 유지</li>
-                <li>• 새로운 게임 도전 권장</li>
-                <li>• 정기적인 자가진단 실시</li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>

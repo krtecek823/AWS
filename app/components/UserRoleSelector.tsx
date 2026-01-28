@@ -2,13 +2,19 @@ import { useState } from 'react';
 import Layout from './Layout';
 
 interface UserRoleSelectorProps {
-  userInfo: { name: string; id: string };
+  userInfo: { 
+    name: string; 
+    id: string;
+    guardianPin?: string;
+  };
   onRoleSelect: (role: 'user' | 'guardian') => void;
   onLogout: () => void;
 }
 
 export default function UserRoleSelector({ userInfo, onRoleSelect, onLogout }: UserRoleSelectorProps) {
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinInput, setPinInput] = useState('');
 
   const toggleFontSize = () => {
     const sizes: ('normal' | 'large')[] = ['normal', 'large'];
@@ -17,6 +23,29 @@ export default function UserRoleSelector({ userInfo, onRoleSelect, onLogout }: U
     setFontSize(sizes[nextIndex]);
   };
 
+  const handleGuardianClick = () => {
+    if (!userInfo.guardianPin) {
+      alert('보호자 PIN이 설정되지 않았습니다. 회원가입 시 PIN을 설정해주세요.');
+      return;
+    }
+    setShowPinModal(true);
+  };
+
+  const handlePinSubmit = () => {
+    if (pinInput === userInfo.guardianPin) {
+      setShowPinModal(false);
+      setPinInput('');
+      onRoleSelect('guardian');
+    } else {
+      alert('PIN 번호가 올바르지 않습니다.');
+      setPinInput('');
+    }
+  };
+
+  const handlePinCancel = () => {
+    setShowPinModal(false);
+    setPinInput('');
+  };
   const getFontSizeLabel = () => {
     switch(fontSize) {
       case 'normal': return '보통';
@@ -110,7 +139,7 @@ export default function UserRoleSelector({ userInfo, onRoleSelect, onLogout }: U
 
           {/* 보호자 카드 */}
           <div
-            onClick={() => onRoleSelect('guardian')}
+            onClick={handleGuardianClick}
             className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-6"
           >
             <div className="flex-shrink-0">
@@ -143,6 +172,49 @@ export default function UserRoleSelector({ userInfo, onRoleSelect, onLogout }: U
             역할을 선택해주세요
           </p>
         </div>
+
+        {/* PIN 입력 모달 */}
+        {showPinModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🔒</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">보호자 인증</h3>
+                <p className="text-gray-600">보호자 PIN 번호를 입력해주세요</p>
+              </div>
+              
+              <div className="mb-6">
+                <input
+                  type="password"
+                  maxLength={4}
+                  value={pinInput}
+                  onChange={(e) => setPinInput(e.target.value)}
+                  placeholder="4자리 PIN 번호"
+                  className="w-full px-4 py-4 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-all"
+                  autoFocus
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={handlePinCancel}
+                  className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handlePinSubmit}
+                  disabled={pinInput.length !== 4}
+                  className="flex-1 py-3 px-4 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                >
+                  확인
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

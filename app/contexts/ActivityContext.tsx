@@ -41,6 +41,7 @@ interface ActivityContextType {
       diagnosisScore?: number;
     }>;
     latestDiagnosis?: DiagnosisResult;
+    recentDiagnosisResults: DiagnosisResult[];
   };
 }
 
@@ -48,12 +49,87 @@ const ActivityContext = createContext<ActivityContextType | undefined>(undefined
 
 export function ActivityProvider({ children }: { children: ReactNode }) {
   const [activityData, setActivityData] = useState<ActivityData>({
-    sessions: [],
-    diagnosisResults: []
+    sessions: [
+      // 샘플 세션 데이터
+      {
+        id: 'chat_1',
+        type: 'chat',
+        startTime: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000 + 15 * 60 * 1000),
+        duration: 15
+      },
+      {
+        id: 'game_1',
+        type: 'game',
+        gameType: 'memory',
+        startTime: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000 + 10 * 60 * 1000),
+        duration: 10,
+        score: 85
+      },
+      {
+        id: 'chat_2',
+        type: 'chat',
+        startTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 + 20 * 60 * 1000),
+        duration: 20
+      },
+      {
+        id: 'game_2',
+        type: 'game',
+        gameType: 'math',
+        startTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 12 * 60 * 1000),
+        duration: 12,
+        score: 92
+      },
+      {
+        id: 'game_3',
+        type: 'game',
+        gameType: 'sequence',
+        startTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000 + 8 * 60 * 1000),
+        duration: 8,
+        score: 78
+      }
+    ],
+    diagnosisResults: [
+      // 샘플 데이터 - 실제 사용시에는 제거
+      {
+        date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6일 전
+        score: 3,
+        answers: [1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0]
+      },
+      {
+        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5일 전
+        score: 8,
+        answers: [1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1]
+      },
+      {
+        date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4일 전
+        score: 14,
+        answers: [1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1]
+      },
+      {
+        date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3일 전
+        score: 19,
+        answers: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0]
+      },
+      {
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2일 전
+        score: 23,
+        answers: [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0]
+      },
+      {
+        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1일 전
+        score: 28,
+        answers: [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0]
+      }
+    ]
   });
 
   const startSession = (type: 'chat' | 'game', gameType?: string): string => {
-    const sessionId = `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const sessionId = `${type}_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     const newSession: ActivitySession = {
       id: sessionId,
       type,
@@ -166,6 +242,11 @@ export function ActivityProvider({ children }: { children: ReactNode }) {
       ? activityData.diagnosisResults[activityData.diagnosisResults.length - 1]
       : undefined;
 
+    // 최근 7일간의 진단 결과들
+    const recentDiagnosisResults = activityData.diagnosisResults.filter(result => 
+      result.date >= weekAgo
+    ).sort((a, b) => a.date.getTime() - b.date.getTime());
+
     return {
       totalChatSessions,
       totalGameSessions,
@@ -173,7 +254,8 @@ export function ActivityProvider({ children }: { children: ReactNode }) {
       avgDailyTime,
       gameStats,
       dailyActivities,
-      latestDiagnosis
+      latestDiagnosis,
+      recentDiagnosisResults
     };
   };
 
