@@ -4,9 +4,10 @@ interface LayoutProps {
   children: ReactNode;
   showMobileFrame?: boolean;
   isGuardianMode?: boolean;
+  isUserMode?: boolean;
 }
 
-export default function Layout({ children, showMobileFrame = true, isGuardianMode = false }: LayoutProps) {
+export default function Layout({ children, showMobileFrame = true, isGuardianMode = false, isUserMode = false }: LayoutProps) {
   if (!showMobileFrame) {
     // 웹 버전 - 전체 화면 사용
     return (
@@ -24,6 +25,8 @@ export default function Layout({ children, showMobileFrame = true, isGuardianMod
       <div className={`w-full max-w-[562px] bg-white rounded-3xl shadow-2xl overflow-hidden h-[95vh] max-h-[900px] flex flex-col ${
         isGuardianMode 
           ? 'border-4 border-green-500 shadow-green-200' 
+          : isUserMode
+          ? 'border-4 border-blue-500 shadow-blue-200'
           : 'border border-gray-200'
       }`}>
         <div className="flex-1 overflow-y-auto">

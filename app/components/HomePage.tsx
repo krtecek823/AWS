@@ -321,129 +321,142 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
   );
 
   return (
-    <Layout>
-      <div className="p-6 h-full flex flex-col">
-        {/* 헤더 */}
-        <div className="flex justify-between items-start mb-8 border-b border-gray-200 pb-6">
-          <div className="flex-1">
-            <h1 className={`${titleSizeClasses[fontSize]} font-light text-gray-800 mb-2`}>
-              안녕하세요,
-            </h1>
-            <h2 className={`${titleSizeClasses[fontSize]} font-bold text-gray-800 mb-4`}>
-              {userInfo?.name || '사용자'}님
-            </h2>
-            <p className={`${fontSizeClasses[fontSize]} text-gray-600 mb-2`}>
-              오늘도 함께 건강한 하루를 보내요
-            </p>
-            <p className={`text-sm text-gray-500`}>
-              {getCurrentDate()}
-            </p>
-          </div>
-          
-          <div className="flex flex-col gap-3">
-            {/* 뒤로가기 버튼 */}
-            <button
-              onClick={onBack}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+    <Layout isUserMode={true}>
+      <div className="h-full flex flex-col">
+        {/* 헤더 - 파란색 배경 */}
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <button
+                  onClick={onBack}
+                  className="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 2.5C11.375 2.5 12.5 3.625 12.5 5C12.5 6.375 11.375 7.5 10 7.5C8.625 7.5 7.5 6.375 7.5 5C7.5 3.625 8.625 2.5 10 2.5ZM10 15C12.875 15 17.25 16.625 17.5 17.5H2.5C2.75 16.625 7.125 15 10 15ZM10 10C12.75 10 17.5 12.25 17.5 15V17.5H2.5V15C2.5 12.25 7.25 10 10 10Z" fill="white"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className={`${titleSizeClasses[fontSize]} font-light text-white mb-1`}>
+                      안녕하세요,
+                    </h1>
+                    <h2 className={`${titleSizeClasses[fontSize]} font-bold text-white`}>
+                      {userInfo?.name || '사용자'}님
+                    </h2>
+                  </div>
+                </div>
+              </div>
+              <p className={`${fontSizeClasses[fontSize]} text-white/90 ml-12`}>
+                오늘도 함께 건강한 하루를 보내요
+              </p>
+              <p className="text-sm text-white/80 ml-12">
+                {getCurrentDate()}
+              </p>
+            </div>
             
-            {/* 글씨 크기 조절 버튼 */}
-            <button
-              onClick={toggleFontSize}
-              className="flex items-center gap-2 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all text-sm font-medium"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <text x="2" y="8" fontSize="6" fill="currentColor">A</text>
-                <text x="8" y="12" fontSize="8" fill="currentColor">A</text>
-                <text x="13" y="16" fontSize="10" fill="currentColor">A</text>
-              </svg>
-              <span>{getFontSizeLabel()}</span>
-            </button>
+            <div className="flex flex-col gap-3">
+              {/* 글씨 크기 조절 버튼 */}
+              <button
+                onClick={toggleFontSize}
+                className="flex items-center gap-2 px-4 py-3 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all text-sm font-medium"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <text x="2" y="8" fontSize="6" fill="currentColor">A</text>
+                  <text x="8" y="12" fontSize="8" fill="currentColor">A</text>
+                  <text x="13" y="16" fontSize="10" fill="currentColor">A</text>
+                </svg>
+                <span>{getFontSizeLabel()}</span>
+              </button>
 
-            {/* 설정 버튼 */}
-            <button
-              onClick={onSettings}
-              className="flex items-center gap-2 px-4 py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-all text-sm font-medium"
-              title="설정"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M16.25 10C16.25 10.625 16.125 11.25 15.875 11.875L17.5 13.125C17.625 13.25 17.625 13.5 17.5 13.625L15.875 16.375C15.75 16.5 15.5 16.5 15.375 16.375L13.625 15.125C13 15.375 12.375 15.5 11.75 15.5V17.5C11.75 17.625 11.625 17.75 11.5 17.75H8.5C8.375 17.75 8.25 17.625 8.25 17.5V15.5C7.625 15.5 7 15.375 6.375 15.125L4.625 16.375C4.5 16.5 4.25 16.5 4.125 16.375L2.5 13.625C2.375 13.5 2.375 13.25 2.5 13.125L4.125 11.875C3.875 11.25 3.75 10.625 3.75 10C3.75 9.375 3.875 8.75 4.125 8.125L2.5 6.875C2.375 6.75 2.375 6.5 2.5 6.375L4.125 3.625C4.25 3.5 4.5 3.5 4.625 3.625L6.375 4.875C7 4.625 7.625 4.5 8.25 4.5V2.5C8.25 2.375 8.375 2.25 8.5 2.25H11.5C11.625 2.25 11.75 2.375 11.75 2.5V4.5C12.375 4.5 13 4.625 13.625 4.875L15.375 3.625C15.5 3.5 15.75 3.5 15.875 3.625L17.5 6.375C17.625 6.5 17.625 6.75 17.5 6.875L15.875 8.125C16.125 8.75 16.25 9.375 16.25 10Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span>설정</span>
-            </button>
+              {/* 설정 버튼 */}
+              <button
+                onClick={onSettings}
+                className="flex items-center gap-2 px-4 py-3 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all text-sm font-medium"
+                title="설정"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16.25 10C16.25 10.625 16.125 11.25 15.875 11.875L17.5 13.125C17.625 13.25 17.625 13.5 17.5 13.625L15.875 16.375C15.75 16.5 15.5 16.5 15.375 16.375L13.625 15.125C13 15.375 12.375 15.5 11.75 15.5V17.5C11.75 17.625 11.625 17.75 11.5 17.75H8.5C8.375 17.75 8.25 17.625 8.25 17.5V15.5C7.625 15.5 7 15.375 6.375 15.125L4.625 16.375C4.5 16.5 4.25 16.5 4.125 16.375L2.5 13.625C2.375 13.5 2.375 13.25 2.5 13.125L4.125 11.875C3.875 11.25 3.75 10.625 3.75 10C3.75 9.375 3.875 8.75 4.125 8.125L2.5 6.875C2.375 6.75 2.375 6.5 2.5 6.375L4.125 3.625C4.25 3.5 4.5 3.5 4.625 3.625L6.375 4.875C7 4.625 7.625 4.5 8.25 4.5V2.5C8.25 2.375 8.375 2.25 8.5 2.25H11.5C11.625 2.25 11.75 2.375 11.75 2.5V4.5C12.375 4.5 13 4.625 13.625 4.875L15.375 3.625C15.5 3.5 15.75 3.5 15.875 3.625L17.5 6.375C17.625 6.5 17.625 6.75 17.5 6.875L15.875 8.125C16.125 8.75 16.25 9.375 16.25 10Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>설정</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* 기능 카드들 */}
-        <div className="flex-1 space-y-6">
-          {/* AI 챗봇 카드 */}
-          <div
-            onClick={onChatbot}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
-          >
-            <div className="flex-shrink-0">
-              <ChatIcon />
+        {/* 콘텐츠 영역 */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* 기능 카드들 */}
+          <div className="space-y-6 mb-6">
+            {/* AI 챗봇 카드 */}
+            <div
+              onClick={onChatbot}
+              className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+            >
+              <div className="flex-shrink-0">
+                <ChatIcon />
+              </div>
+              <div className="flex-1">
+                <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
+                  AI 친구와 대화하기
+                </h3>
+                <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
+                  오늘 기분은 어떠세요?
+                </p>
+                <p className={`${fontSizeClasses[fontSize]} opacity-90`}>
+                  편하게 이야기 나눠요
+                </p>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
-                AI 친구와 대화하기
-              </h3>
-              <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
-                오늘 기분은 어떠세요?
-              </p>
-              <p className={`${fontSizeClasses[fontSize]} opacity-90`}>
-                편하게 이야기 나눠요
-              </p>
-            </div>
-          </div>
 
-          {/* 자가진단 카드 */}
-          <div
-            onClick={startDiagnosis}
-            className="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
-          >
-            <div className="flex-shrink-0">
-              <DiagnosisIcon />
+            {/* 자가진단 카드 */}
+            <div
+              onClick={startDiagnosis}
+              className="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+            >
+              <div className="flex-shrink-0">
+                <DiagnosisIcon />
+              </div>
+              <div className="flex-1">
+                <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
+                  자가진단
+                </h3>
+                <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
+                  15개 간단한 질문으로
+                </p>
+                <p className={`${fontSizeClasses[fontSize]} opacity-90`}>
+                  인지 상태를 확인해보세요
+                </p>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
-                자가진단
-              </h3>
-              <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
-                15개 간단한 질문으로
-              </p>
-              <p className={`${fontSizeClasses[fontSize]} opacity-90`}>
-                인지 상태를 확인해보세요
-              </p>
-            </div>
-          </div>
 
-          {/* 두뇌 훈련 게임 카드 */}
-          <div
-            onClick={onBrainGame}
-            className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
-          >
-            <div className="flex-shrink-0">
-              <GameIcon />
-            </div>
-            <div className="flex-1">
-              <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
-                두뇌 훈련 게임
-              </h3>
-              <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
-                재미있는 게임으로
-              </p>
-              <p className={`${fontSizeClasses[fontSize]} opacity-90`}>
-                기억력을 키워요
-              </p>
+            {/* 두뇌 훈련 게임 카드 */}
+            <div
+              onClick={onBrainGame}
+              className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-5"
+            >
+              <div className="flex-shrink-0">
+                <GameIcon />
+              </div>
+              <div className="flex-1">
+                <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-bold mb-2`}>
+                  두뇌 훈련 게임
+                </h3>
+                <p className={`${fontSizeClasses[fontSize]} opacity-90 mb-1`}>
+                  재미있는 게임으로
+                </p>
+                <p className={`${fontSizeClasses[fontSize]} opacity-90`}>
+                  기억력을 키워요
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
         {/* 자가진단 모달 */}
         {showDiagnosis && (
@@ -543,84 +556,85 @@ export default function HomePage({ userInfo, onBack, onChatbot, onBrainGame, onS
           </div>
         )}
 
-        {/* 하단 메시지 */}
-        <div className="text-center py-6 border-t border-gray-100 mt-6">
-          <p className={`${fontSizeClasses[fontSize]} text-gray-500`}>
-            천천히, 편안하게 사용하세요
-          </p>
-        </div>
+          {/* 하단 메시지 */}
+          <div className="text-center py-6 border-t border-gray-100 mt-6">
+            <p className={`${fontSizeClasses[fontSize]} text-gray-500`}>
+              천천히, 편안하게 사용하세요
+            </p>
+          </div>
 
-        {/* 오늘의 건강 정보 섹션 */}
-        <div className="mt-4">
-          <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-semibold text-gray-800 mb-4 px-2`}>치매 예방 건강 정보</h3>
-          <div className="space-y-4 max-h-48 overflow-y-auto">
-            {/* 기사 1 - 치매 예방 운동 */}
-            <a 
-              href="https://www.hidoc.co.kr/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100 hover:shadow-md transition-all"
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>규칙적인 운동으로 치매 예방하기</h4>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>주 3회 이상 30분 운동으로 뇌 혈류량 증가, 인지기능 향상에 도움</p>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-blue-600 font-medium`}>하이닥 건강정보</p>
+          {/* 오늘의 건강 정보 섹션 */}
+          <div className="mt-4">
+            <h3 className={`${fontSize === 'large' ? 'text-2xl' : 'text-xl'} font-semibold text-gray-800 mb-4 px-2`}>치매 예방 건강 정보</h3>
+            <div className="space-y-4 max-h-48 overflow-y-auto">
+              {/* 기사 1 - 치매 예방 운동 */}
+              <a 
+                href="https://www.hidoc.co.kr/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100 hover:shadow-md transition-all"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>규칙적인 운동으로 치매 예방하기</h4>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>주 3회 이상 30분 운동으로 뇌 혈류량 증가, 인지기능 향상에 도움</p>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-blue-600 font-medium`}>하이닥 건강정보</p>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
 
-            {/* 기사 2 - 치매 예방 식습관 */}
-            <a 
-              href="https://www.amc.seoul.kr/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-5 border border-green-100 hover:shadow-md transition-all"
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>뇌 건강에 좋은 음식과 식습관</h4>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>오메가3, 항산화 성분이 풍부한 음식으로 치매 위험 40% 감소</p>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-green-600 font-medium`}>서울아산병원</p>
+              {/* 기사 2 - 치매 예방 식습관 */}
+              <a 
+                href="https://www.amc.seoul.kr/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-5 border border-green-100 hover:shadow-md transition-all"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>뇌 건강에 좋은 음식과 식습관</h4>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>오메가3, 항산화 성분이 풍부한 음식으로 치매 위험 40% 감소</p>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-green-600 font-medium`}>서울아산병원</p>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
 
-            {/* 기사 3 - 치매 예방 두뇌 활동 */}
-            <a 
-              href="https://www.snuh.org/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-100 hover:shadow-md transition-all"
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>두뇌 훈련 게임의 치매 예방 효과</h4>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>매일 15분 두뇌 게임으로 기억력, 집중력, 문제해결 능력 향상</p>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-purple-600 font-medium`}>서울대학교병원</p>
+              {/* 기사 3 - 치매 예방 두뇌 활동 */}
+              <a 
+                href="https://www.snuh.org/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-100 hover:shadow-md transition-all"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>두뇌 훈련 게임의 치매 예방 효과</h4>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>매일 15분 두뇌 게임으로 기억력, 집중력, 문제해결 능력 향상</p>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-purple-600 font-medium`}>서울대학교병원</p>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
 
-            {/* 기사 4 - 치매 예방 수면 */}
-            <a 
-              href="https://www.samsunghospital.com/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-5 border border-orange-100 hover:shadow-md transition-all"
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-3 h-3 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>충분한 수면이 치매 예방의 핵심</h4>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>하루 7-8시간 양질의 수면으로 뇌 독소 제거, 기억 정리 효과</p>
-                  <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-orange-600 font-medium`}>삼성서울병원</p>
+              {/* 기사 4 - 치매 예방 수면 */}
+              <a 
+                href="https://www.samsunghospital.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-5 border border-orange-100 hover:shadow-md transition-all"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <h4 className={`${fontSize === 'large' ? 'text-xl' : 'text-lg'} font-semibold text-gray-800 mb-3`}>충분한 수면이 치매 예방의 핵심</h4>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-gray-600 leading-relaxed mb-3`}>하루 7-8시간 양질의 수면으로 뇌 독소 제거, 기억 정리 효과</p>
+                    <p className={`${fontSize === 'large' ? 'text-lg' : 'text-base'} text-orange-600 font-medium`}>삼성서울병원</p>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
+            </div>
           </div>
         </div>
       </div>
