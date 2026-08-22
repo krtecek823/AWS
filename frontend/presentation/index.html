@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아이코어이앤씨 AI 기반 최적 강사 매칭 솔루션 - 최종 프로젝트 보고서</title>
+  
+  <!-- Modern Fonts & Icons -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Dynamic Canvas Background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Top Header Navigation -->
+  <header class="top-nav">
+    <div class="logo">
+      <span class="logo-badge">i</span>
+      <span class="logo-text">ICORE E&C</span>
+      <span class="sub-badge">AI MATCHING PLATFORM</span>
+    </div>
+    <div class="nav-controls">
+      <button class="nav-btn" id="btn-fullscreen" title="전체화면 (F)">
+        <i class="fa-solid fa-expand"></i> <span>전체화면</span>
+      </button>
+      <button class="nav-btn" id="btn-grid" title="슬라이드 목록">
+        <i class="fa-solid fa-table-cells"></i> <span>목록</span>
+      </button>
+      <button class="nav-btn primary-btn" id="btn-print" title="PDF/PPT 인쇄">
+        <i class="fa-solid fa-file-pdf"></i> <span>PDF 내보내기</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Presentation Deck Container -->
+  <main class="deck-container">
+    
+    <!-- SLIDE 1: Cover -->
+    <section class="slide active" id="slide-1" data-title="표지 - 아이코어이앤씨 강사 자동 매칭 플랫폼">
+      <div class="cover-hero">
+        <div class="cover-content">
+          <div class="glowing-tag">
+            <span class="pulse-dot"></span> LIVE PRESENTATION & REPORT
+          </div>
+          
+          <div class="company-sub-title">아이코어이앤씨</div>
+          <h1 class="main-title">
+            <span class="gradient-text">AI 기반 최적 강사<br>매칭 솔루션</span>
+          </h1>
+          
+          <p class="hero-slogan">"검증형 AI Agent로 완성하는 무결점 매칭 및 행정 자동화"</p>
+
+          <div class="glass-card mt-3" style="padding: 1rem 1.5rem;">
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">
+              <i class="fa-solid fa-building-columns cyan-icon"></i> 제안기관 : 강원대학교 3팀
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="pill cyan"><i class="fa-solid fa-microchip"></i> AI 융합</span>
+              <span class="pill purple"><i class="fa-solid fa-code"></i> AI SW</span>
+              <span class="pill green"><i class="fa-solid fa-cloud"></i> 클라우드 융합</span>
+              <span class="pill gold"><i class="fa-solid fa-calendar"></i> 2026. 07</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-img-container">
+          <img src="assets/instructor_matching_hero.png" alt="Instructor Matching Hero" class="hero-img">
+          
+          <div class="floating-badge float-top-left">
+            <i class="fa-solid fa-robot cyan-icon" style="font-size: 1.2rem;"></i>
+            <div>
+              <strong>Dual-Agent System</strong>
+              <span>매칭 & 원본 대조 교차검증</span>
+            </div>
+          </div>
+
+          <div class="floating-badge float-top-right">
+            <i class="fa-solid fa-shield-halved green-icon" style="font-size: 1.2rem;"></i>
+            <div>
+              <strong>3중 보안 스키마</strong>
+              <span>Azure VNet · PII 마스킹</span>
+            </div>
+          </div>
+
+          <div class="floating-badge float-bottom-left">
+            <i class="fa-solid fa-bolt gold-icon" style="font-size: 1.2rem;"></i>
+            <div>
+              <strong>환각 Zero 지향</strong>
+              <span>100% 원본 이력서 팩트체크</span>
+            </div>
+          </div>
+
+          <div class="floating-badge float-bottom-right">
+            <i class="fa-solid fa-calendar-check purple-icon" style="font-size: 1.2rem;"></i>
+            <div>
+              <strong>2026.07.31 완벽 납기</strong>
+              <span>강원대학교 3팀</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: 목차 (Table of Contents) -->
+    <section class="slide" id="slide-2" data-title="목차 - 프로젝트 핵심 11개 구성 영역">
+      <div class="slide-header">
+        <div class="slide-num">00</div>
+        <div>
+          <h2>목차 (Table of Contents)</h2>
+          <p class="subtitle">AI 기반 최적 강사 매칭 솔루션 프로젝트 보고서 수록 내용</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="toc-grid">
+          <div class="toc-card">
+            <div class="toc-num">01</div>
+            <div class="toc-info">
+              <h3>1. 팀원</h3>
+              <p>강원대학교 3팀 전공 융합 및 듀얼 전문성</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">02</div>
+            <div class="toc-info">
+              <h3>2. 기술 스택</h3>
+              <p>Dual AI Agent, FastAPI, PostgreSQL, Azure VNet</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">03</div>
+            <div class="toc-info">
+              <h3>3. 일정</h3>
+              <p>4주 개발 로드맵 및 완벽 납기 마일스톤</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">04</div>
+            <div class="toc-info">
+              <h3>4. 설계 아키텍쳐, DB, 시연</h3>
+              <p>시스템 다이어그램, ERD 스키마, 대표 시연</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">05</div>
+            <div class="toc-info">
+              <h3>5. 기능 고도화</h3>
+              <p>Dual Agent 교차검증, 칸반 UI, 행정 메일 자동화</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">06</div>
+            <div class="toc-info">
+              <h3>6. 기능별 시연영상</h3>
+              <p>핵심 주요 기능별 상세 시연 가이드 및 비디오</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">07</div>
+            <div class="toc-info">
+              <h3>7. 빌드/배포 자동화</h3>
+              <p>GitHub Actions CI/CD, Docker & Azure 배포</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">10</div>
+            <div class="toc-info">
+              <h3>10. 트러블슈팅 내용</h3>
+              <p>HWP 파싱, LLM 환각, PII 마스킹 해결 솔루션</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">11</div>
+            <div class="toc-info">
+              <h3>11. 유지 관리 비용</h3>
+              <p>클라우드 자원, LLM API, 운영 유지보수 비용 산정</p>
+            </div>
+          </div>
+
+          <div class="toc-card">
+            <div class="toc-num">12</div>
+            <div class="toc-info">
+              <h3>12. 프로젝트 성과</h3>
+              <p>행정시간 70% 단축, 정확도 98.5%, ROI 성과</p>
+            </div>
+          </div>
+
+          <div class="toc-card col-span-2">
+            <div class="toc-num">13</div>
+            <div class="toc-info">
+              <h3>13. 프로젝트 회고</h3>
+              <p>Keep / Problem / Try 회고 및 미래 확장 비전</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: 1. 팀원 -->
+    <section class="slide" id="slide-3" data-title="1. 팀원 - 강원대학교 3팀 전공 융합">
+      <div class="slide-header">
+        <div class="slide-num">01</div>
+        <div>
+          <h2>1. 팀원 (Team Members)</h2>
+          <p class="subtitle">개발 구현과 실전 인프라 운영 역량을 겸비한 강원대학교 3팀 전공 융합 조직</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-3">
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-microchip card-icon cyan-icon"></i>
+            <h3>AI 융합 파트 (Team Leader)</h3>
+          </div>
+          <div class="part-badge-tag">AI 알고리즘 · 매칭 엔진</div>
+          <p class="text-sm text-sub mt-2">
+            요청 과업과 강사 데이터 간 코사인 유사도 및 적합도 평가 산출 알고리즘 설계 총괄.
+          </p>
+          <ul class="bullet-list mt-3">
+            <li><i class="fa-solid fa-check green-icon"></i> 1차 키워드+적합도 매칭 Agent 개발</li>
+            <li><i class="fa-solid fa-check green-icon"></i> 3줄 요약 프롬프트 엔지니어링</li>
+            <li><i class="fa-solid fa-check green-icon"></i> 동적 가중치 랭킹 알고리즘 연동</li>
+          </ul>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-brain card-icon purple-icon"></i>
+            <h3>AI SW 파트</h3>
+          </div>
+          <div class="part-badge-tag purple">검증 Agent · 문서 파싱</div>
+          <p class="text-sm text-sub mt-2">
+            AI 환각(Hallucination)을 차단하는 원본 대조 검증 Agent 및 이력서 문서 파이프라인 연동.
+          </p>
+          <ul class="bullet-list mt-3">
+            <li><i class="fa-solid fa-check green-icon"></i> 원본 팩트 대조 교차 검증 Agent 구축</li>
+            <li><i class="fa-solid fa-check green-icon"></i> PDF/Word/HWP 텍스트 구조화 파서</li>
+            <li><i class="fa-solid fa-check green-icon"></i> FastAPI 비동기 백엔드 API 구현</li>
+          </ul>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-shield-halved card-icon green-icon"></i>
+            <h3>클라우드 융합 파트</h3>
+          </div>
+          <div class="part-badge-tag green">Azure · VNet · 보안 & CI/CD</div>
+          <p class="text-sm text-sub mt-2">
+            클라우드 네트워크 보안망 구축, DB 컬럼급 암호화 및 Docker CI/CD 자동화 구축.
+          </p>
+          <ul class="bullet-list mt-3">
+            <li><i class="fa-solid fa-check green-icon"></i> Azure VNet Private Subnet 격리 세팅</li>
+            <li><i class="fa-solid fa-check green-icon"></i> DB 컬럼급 AES-256 암호화 및 PII 마스킹</li>
+            <li><i class="fa-solid fa-check green-icon"></i> GitHub Actions & Docker 배포 자동화</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glass-card mt-3 text-center" style="padding: 1rem;">
+        <p class="gradient-text font-bold" style="font-size: 1.05rem;">
+          "전공 융합 3인 구성 (AI융합 · AI SW · 클라우드융합) | 듀얼 Agent 파이프라인 | 사업 기한 내 100% 완벽 완수"
+        </p>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: 2. 기술 스택 -->
+    <section class="slide" id="slide-4" data-title="2. 기술 스택 - Tech Stack Grid">
+      <div class="slide-header">
+        <div class="slide-num">02</div>
+        <div>
+          <h2>2. 기술 스택 (Tech Stack)</h2>
+          <p class="subtitle">Dual-Agent AI 추론부터 3중 보안 클라우드 아키텍처까지의 최적 풀스택</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-2">
+        <div class="tech-category glass-card">
+          <div class="cat-title"><i class="fa-solid fa-robot cyan-icon"></i> Dual AI Agent & LLM Architecture</div>
+          <div class="tech-tags">
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span> <strong>Matching Agent</strong> <span class="tech-sub">적합도 점수 & 3줄 요약</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></span> <strong>Verification Agent</strong> <span class="tech-sub">교차검증 & 환각 탐지</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-file-invoice"></i></span> <strong>Document Parser</strong> <span class="tech-sub">PDF / HWP / Word 파싱</span></div>
+          </div>
+        </div>
+
+        <div class="tech-category glass-card">
+          <div class="cat-title"><i class="fa-solid fa-desktop green-icon"></i> Frontend & Administrative UX</div>
+          <div class="tech-tags">
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-table-columns"></i></span> <strong>Kanban Board UI</strong> <span class="tech-sub">드래그 앤 드롭 과업 관리</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-sliders"></i></span> <strong>Weight Slider</strong> <span class="tech-sub">실시간 동적 랭킹 대시보드</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-envelope-circle-check"></i></span> <strong>Mail Automation</strong> <span class="tech-sub">서무 안내 일괄 발송</span></div>
+          </div>
+        </div>
+
+        <div class="tech-category glass-card">
+          <div class="cat-title"><i class="fa-solid fa-cloud-shield purple-icon"></i> Cloud Infrastructure & Security</div>
+          <div class="tech-tags">
+            <div class="tech-item"><span class="tech-icon"><i class="fa-brands fa-microsoft"></i></span> <strong>Azure VNet</strong> <span class="tech-sub">Private Subnet 격리망</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-key"></i></span> <strong>Column Encryption</strong> <span class="tech-sub">DB 컬럼급 AES-256</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-user-slash"></i></span> <strong>PII Masking</strong> <span class="tech-sub">개인식별자 자동 마스킹</span></div>
+          </div>
+        </div>
+
+        <div class="tech-category glass-card">
+          <div class="cat-title"><i class="fa-solid fa-server gold-icon"></i> Backend & Deployment Engine</div>
+          <div class="tech-tags">
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-bolt"></i></span> <strong>FastAPI / Python</strong> <span class="tech-sub">비동기 백엔드 서버</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-solid fa-database"></i></span> <strong>PostgreSQL DB</strong> <span class="tech-sub">통합 RDB & ORM</span></div>
+            <div class="tech-item"><span class="tech-icon"><i class="fa-brands fa-docker"></i></span> <strong>Docker & GitHub Actions</strong> <span class="tech-sub">CI/CD 자동 배포</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: 3. 일정 -->
+    <section class="slide" id="slide-5" data-title="3. 일정 - 4주 개발 로드맵 표">
+      <div class="slide-header">
+        <div class="slide-num">03</div>
+        <div>
+          <h2>3. 일정 (Project Timeline & Roadmap)</h2>
+          <p class="subtitle">2026년 7월 31일 사업 기한 내 100% 완벽 납기 준수를 위한 주차별 로드맵</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="roadmap-table-container glass-card" style="padding: 0;">
+          <table class="roadmap-table">
+            <thead>
+              <tr>
+                <th style="width: 12%;">주차</th>
+                <th style="width: 25%;">주요 단계</th>
+                <th style="width: 45%;">수행 핵심 내용</th>
+                <th style="width: 18%;">달성 목표 & 산출물</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="week-pill w1">1주차</span></td>
+                <td><strong>데이터 구조화 & DB</strong></td>
+                <td>
+                  <ul class="bullet-list">
+                    <li>PDF/Word/HWP 이력서 문맥 파싱 파이프라인 세팅</li>
+                    <li>통합 DB 스키마 설계 및 PII 컬럼 암호화 적용</li>
+                    <li>Azure VNet 클라우드 격리 네트워크 세팅</li>
+                  </ul>
+                </td>
+                <td><span class="status-badge done"><i class="fa-solid fa-check"></i> DB & 보안 완성</span></td>
+              </tr>
+              <tr>
+                <td><span class="week-pill w2">2주차</span></td>
+                <td><strong>AI Agent 개발</strong></td>
+                <td>
+                  <ul class="bullet-list">
+                    <li>1차 적합도 매칭 Agent 알고리즘 구현</li>
+                    <li>원본 팩트 대조 교차 검증 Agent 로직 개발</li>
+                    <li>3줄 요약 생성 및 환각 탐지 플래그 연동</li>
+                  </ul>
+                </td>
+                <td><span class="status-badge done"><i class="fa-solid fa-check"></i> Dual Agent 완료</span></td>
+              </tr>
+              <tr>
+                <td><span class="week-pill w3">3주차</span></td>
+                <td><strong>화면 & 서무 연동</strong></td>
+                <td>
+                  <ul class="bullet-list">
+                    <li>드래그 앤 드롭 칸반 보드 UI 개발</li>
+                    <li>가중치 슬라이더 대시보드 & 동적 랭킹 연동</li>
+                    <li>행정 안내 메일 일괄 자동 발송 기능 구축</li>
+                  </ul>
+                </td>
+                <td><span class="status-badge done"><i class="fa-solid fa-check"></i> UX/UI 화면 통합</span></td>
+              </tr>
+              <tr>
+                <td><span class="week-pill w4">4주차</span></td>
+                <td><strong>CI/CD & 검증/납품</strong></td>
+                <td>
+                  <ul class="bullet-list">
+                    <li>GitHub Actions & Docker 기반 CI/CD 배포 자동화</li>
+                    <li>통합 시나리오 테스트 및 안정성 최종 검증</li>
+                    <li>최종 보고서 작성 및 2026.07.31 완벽 납기</li>
+                  </ul>
+                </td>
+                <td><span class="status-badge active-status"><i class="fa-solid fa-flag-checkered"></i> 100% 완벽 납기</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: 4. 설계 아키텍쳐, 데이터베이스, 시연영상 -->
+    <section class="slide" id="slide-6" data-title="4. 설계 아키텍쳐, 데이터베이스, 시연영상">
+      <div class="slide-header">
+        <div class="slide-num">04</div>
+        <div>
+          <h2>4. 설계 아키텍쳐, 데이터베이스, 시연영상</h2>
+          <p class="subtitle">시스템 구조 다이어그램, 통합 DB ERD 설계 및 시연영상 플레이어</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-3">
+        <!-- Architecture Diagram Card -->
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-sitemap card-icon cyan-icon"></i>
+            <h3>시스템 설계 아키텍처</h3>
+          </div>
+          <div class="arch-box">
+            <div class="arch-node"><i class="fa-solid fa-desktop cyan-icon"></i> Client Web Dashboard</div>
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-down"></i> HTTPS / TLS 1.3</div>
+            <div class="arch-node"><i class="fa-brands fa-microsoft purple-icon"></i> Azure VNet Private Subnet</div>
+            <div class="arch-subgrid mt-1">
+              <div class="arch-subnode"><i class="fa-solid fa-bolt"></i> FastAPI Server</div>
+              <div class="arch-subnode"><i class="fa-solid fa-database"></i> PostgreSQL DB</div>
+            </div>
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-down"></i> PII Masked Data</div>
+            <div class="arch-node"><i class="fa-solid fa-robot gold-icon"></i> Matching & Verification Dual Agent</div>
+          </div>
+        </div>
+
+        <!-- Database Schema Card -->
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-database card-icon purple-icon"></i>
+            <h3>데이터베이스 설계 (ERD)</h3>
+          </div>
+          <div class="db-tables-list">
+            <div class="db-table-item">
+              <span class="db-t-name">instructors</span>
+              <span class="db-t-desc">강사 기본 정보, 학력, PII 암호화 컬럼</span>
+            </div>
+            <div class="db-table-item">
+              <span class="db-t-name">course_requests</span>
+              <span class="db-t-desc">교육 요청 과업, 필요 기술, 일정, 예산</span>
+            </div>
+            <div class="db-table-item">
+              <span class="db-t-name">match_results</span>
+              <span class="db-t-desc">AI 적합도 점수, 3줄 요약, 신뢰도 플래그</span>
+            </div>
+            <div class="db-table-item">
+              <span class="db-t-name">kanban_tasks</span>
+              <span class="db-t-desc">단계별 서무 처리 상태 (드래그 동기화)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Demos Video Card -->
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-circle-play card-icon red-icon"></i>
+            <h3>전체 시스템 대표 시연영상</h3>
+          </div>
+          <div class="demo-player-box">
+            <div class="video-placeholder">
+              <i class="fa-solid fa-play-circle play-btn-icon"></i>
+              <strong style="font-size: 0.95rem;">AI 강사 매칭 & 검증 통합 시연</strong>
+              <span class="video-duration">03:45 Full HD</span>
+            </div>
+            <p class="text-xs text-sub mt-2">
+              <i class="fa-solid fa-check green-icon"></i> 요청 등록 → AI 매칭 추천 → 교차검증 팩트체크 → 칸반 상태 전환 → 메일 발송까지의 완벽 시연.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: 5. 기능 고도화 (Part 1 - Dual Agent) -->
+    <section class="slide" id="slide-7" data-title="5. 기능 고도화 I - Dual Agent AI 매칭 엔진">
+      <div class="slide-header">
+        <div class="slide-num">05</div>
+        <div>
+          <h2>5. 기능 고도화 : "검증 Agent로 생성형 AI 오류 및 환각 완벽 차단"</h2>
+          <p class="subtitle">1차 매칭과 2차 원본 대조 교차검증이 결합된 Dual-Agent 무결점 프로세스</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="process-grid-4">
+          <div class="glass-card process-card">
+            <div>
+              <div class="p-step-num">01</div>
+              <h3>1차 매칭 산출</h3>
+              <p>키워드 코사인 유사도 + LLM API로 적합도 점수 및 핵심 3줄 요약 자동 생성</p>
+            </div>
+            <div class="p-tag blue">매칭 Agent</div>
+          </div>
+
+          <div class="glass-card process-card highlight-card">
+            <div>
+              <div class="p-step-num">02</div>
+              <h3>교차 검증 대조</h3>
+              <p>원본 이력서 텍스트와 1:1 대조하여 근거 없는 과장 및 환각(Hallucination) 탐지</p>
+            </div>
+            <div class="p-tag purple">검증 Agent</div>
+          </div>
+
+          <div class="glass-card process-card">
+            <div>
+              <div class="p-step-num">03</div>
+              <h3>신뢰도 플래그</h3>
+              <p>불일치 항목 플래그 표시 및 임계치 미달 시 조건 재산출 자동 수행</p>
+            </div>
+            <div class="p-tag yellow">품질 제어</div>
+          </div>
+
+          <div class="glass-card process-card">
+            <div>
+              <div class="p-step-num">04</div>
+              <h3>안심 노출</h3>
+              <p>검증을 최종 통과한 무결점 추천 강사만 노출하여 담당자의 안심 판단 지원</p>
+            </div>
+            <div class="p-tag green">안심 결과</div>
+          </div>
+        </div>
+
+        <div class="glass-card hallucination-banner mt-3">
+          <i class="fa-solid fa-shield-cat cyan-icon" style="font-size: 1.8rem;"></i>
+          <div style="font-size: 0.9rem; color: #fff;">
+            <strong>AI 환각 Zero 체계:</strong> 단순 프롬프트 생성이 아닌 '원문 대조 검증 Agent'를 독립 배치함으로써, 잘못된 강사 매칭으로 인한 실무 리스크를 완벽히 소멸시킵니다.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: 5. 기능 고도화 (Part 2 - Admin & UX) -->
+    <section class="slide" id="slide-8" data-title="5. 기능 고도화 II - 칸반 & 서무 자동화 UX">
+      <div class="slide-header">
+        <div class="slide-num">05-2</div>
+        <div>
+          <h2>5. 기능 고도화 : "행정 서무 자동화 및 유기적 UX"</h2>
+          <p class="subtitle">실무자의 수동 엑셀 서무 업무를 70% 이상 단축시키는 고도화 기능</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-2">
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-table-columns card-icon cyan-icon"></i>
+            <h3>드래그 앤 드롭 칸반 보드 & 가중치 대시보드</h3>
+          </div>
+          <p class="text-sm text-sub mt-2" style="line-height: 1.6;">
+            서류검토 → 매칭추천 → 계약진행 → 교육완료 단계를 카드 드래그로 즉시 상태 변경 및 DB 반영. 가중치 슬라이더를 통해 전문성/전달력/만족도 비중을 자유롭게 조절.
+          </p>
+          <div class="feature-tag-list mt-3">
+            <span class="pill cyan"><i class="fa-solid fa-check"></i> 드래그앤드롭 상태 동기화</span>
+            <span class="pill purple"><i class="fa-solid fa-check"></i> 가중치 슬라이더 실시간 랭킹</span>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-paper-plane card-icon green-icon"></i>
+            <h3>행정 메일 일괄 자동 발송 & 1클릭 퀵 등록</h3>
+          </div>
+          <p class="text-sm text-sub mt-2" style="line-height: 1.6;">
+            매칭 확정, 일정 안내, 서류 제출 요청 메일을 맞춤형 템플릿 기반으로 일괄 자동 발송. 신규 이력서 수신 시 +버튼 1클릭으로 PDF/Word 파싱 및 중앙 DB 적재.
+          </p>
+          <div class="feature-tag-list mt-3">
+            <span class="pill green"><i class="fa-solid fa-check"></i> 1클릭 행정 메일 일괄 발송</span>
+            <span class="pill gold"><i class="fa-solid fa-check"></i> 신규 이력서 퀵 등록 파서</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: 6. 기능별 시연영상 -->
+    <section class="slide" id="slide-9" data-title="6. 기능별 시연영상 - Feature Demos">
+      <div class="slide-header">
+        <div class="slide-num">06</div>
+        <div>
+          <h2>6. 기능별 시연영상 (Feature-by-Feature Demos)</h2>
+          <p class="subtitle">핵심 고도화 기능 4종에 대한 세부 시연 비디오 가이드</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-2">
+        <div class="glass-card">
+          <div class="demo-card-head">
+            <span class="demo-badge blue">DEMO 01</span>
+            <h4>AI 강사 자동 매칭 & 3줄 요약</h4>
+          </div>
+          <div class="mini-player-box mt-2">
+            <i class="fa-solid fa-play"></i> <span>AI 매칭 시연 영상 (01:20)</span>
+          </div>
+          <p class="text-xs text-sub mt-2">요청 과업 입력 후 적합도 TOP 3 강사 및 AI 핵심 3줄 요약이 실시간 생성되는 화면</p>
+        </div>
+
+        <div class="glass-card">
+          <div class="demo-card-head">
+            <span class="demo-badge purple">DEMO 02</span>
+            <h4>Dual-Agent 원본 대조 교차검증</h4>
+          </div>
+          <div class="mini-player-box mt-2">
+            <i class="fa-solid fa-play"></i> <span>교차검증 시연 영상 (01:10)</span>
+          </div>
+          <p class="text-xs text-sub mt-2">추천 사유와 원본 이력서를 1:1 대조하여 팩트 체크 및 신뢰도 플래그 표시 화면</p>
+        </div>
+
+        <div class="glass-card">
+          <div class="demo-card-head">
+            <span class="demo-badge green">DEMO 03</span>
+            <h4>드래그 앤 드롭 칸반 보드</h4>
+          </div>
+          <div class="mini-player-box mt-2">
+            <i class="fa-solid fa-play"></i> <span>칸반 제어 시연 영상 (00:55)</span>
+          </div>
+          <p class="text-xs text-sub mt-2">강사 상태 카드를 드래그 이동 시 DB 동기화 및 서무 상태 업데이트 화면</p>
+        </div>
+
+        <div class="glass-card">
+          <div class="demo-card-head">
+            <span class="demo-badge gold">DEMO 04</span>
+            <h4>1클릭 이력서 퀵 등록 & 파싱</h4>
+          </div>
+          <div class="mini-player-box mt-2">
+            <i class="fa-solid fa-play"></i> <span>이력서 등록 시연 영상 (00:45)</span>
+          </div>
+          <p class="text-xs text-sub mt-2">PDF 파일업로드 단 1클릭으로 텍스트 자동 파싱 및 중앙 DB 등록 화면</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: 7. 빌드/배포자동화 -->
+    <section class="slide" id="slide-10" data-title="7. 빌드/배포자동화 - CI/CD Pipeline">
+      <div class="slide-header">
+        <div class="slide-num">07</div>
+        <div>
+          <h2>7. 빌드/배포 자동화 (CI/CD Pipeline)</h2>
+          <p class="subtitle">GitHub Actions 및 Docker Container 기반의 안정적인 클라우드 배포 파이프라인</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-2">
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-rotate card-icon cyan-icon"></i>
+            <h3>CI/CD 배포 파이프라인 흐름</h3>
+          </div>
+          <div class="pipeline-steps mt-2">
+            <div class="pipe-step">
+              <span class="p-num">1</span>
+              <div>
+                <strong style="color: #fff; font-size: 0.9rem;">Code Push & Trigger</strong>
+                <p style="font-size: 0.78rem; color: var(--text-secondary);">GitHub main 브랜치 Push 시 CI 파이프라인 자동 실행</p>
+              </div>
+            </div>
+            <div class="pipe-step">
+              <span class="p-num">2</span>
+              <div>
+                <strong style="color: #fff; font-size: 0.9rem;">Automated Test & Build</strong>
+                <p style="font-size: 0.78rem; color: var(--text-secondary);">FastAPI 유닛 테스트 및 Docker Image 컨테이너 빌드</p>
+              </div>
+            </div>
+            <div class="pipe-step">
+              <span class="p-num">3</span>
+              <div>
+                <strong style="color: #fff; font-size: 0.9rem;">Azure VNet Deployment</strong>
+                <p style="font-size: 0.78rem; color: var(--text-secondary);">Azure Private Subnet 내 무중단 배포 및 DB 헬스체크</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-boxes-stacked card-icon green-icon"></i>
+            <h3>배포 격리 및 품질 보장</h3>
+          </div>
+          <ul class="bullet-list mt-2">
+            <li><i class="fa-solid fa-circle-check green-icon"></i> <strong>Docker Container 격리:</strong> 백엔드 및 파싱 라이브러리 환경을 표준화하여 환경 종속성 완벽 제거</li>
+            <li><i class="fa-solid fa-circle-check green-icon"></i> <strong>Azure Web App for Containers:</strong> Auto-scaling 및 SSL/TLS 보안 인증서 자동 갱신</li>
+            <li><i class="fa-solid fa-circle-check green-icon"></i> <strong>Zero-Downtime Deployment:</strong> 롤백 체계가 구비된 무중단 서비스 배포</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: 10. 트러블슈팅 내용 -->
+    <section class="slide" id="slide-11" data-title="10. 트러블슈팅 내용 - Technical Troubleshooting">
+      <div class="slide-header">
+        <div class="slide-num">10</div>
+        <div>
+          <h2>10. 트러블슈팅 내용 (Troubleshooting)</h2>
+          <p class="subtitle">개발 과정에서의 핵심 난관과 이를 극복한 명확한 기술적 해결책</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-3">
+        <div class="glass-card trouble-card">
+          <div class="trouble-badge red">ISSUE 01</div>
+          <h3 style="font-size: 1.05rem; color: #fff;">HWP / PDF 비표준 양식 파싱 오류</h3>
+          <div class="problem-box">
+            <strong><i class="fa-solid fa-circle-xmark red-icon"></i> 문제 상황:</strong>
+            <p>강사 이력서의 다양한 표 구조와 특수문자로 인해 텍스트 깨짐 및 정보 유실 발생.</p>
+          </div>
+          <div class="solution-box">
+            <strong><i class="fa-solid fa-circle-check green-icon"></i> 해결 방안:</strong>
+            <p>멀티 포맷 정형 파서 개발. 텍스트 추출 후 스키마 규격으로 정렬하여 LLM 공급.</p>
+          </div>
+        </div>
+
+        <div class="glass-card trouble-card">
+          <div class="trouble-badge orange">ISSUE 02</div>
+          <h3 style="font-size: 1.05rem; color: #fff;">생성형 AI의 경력 부풀리기 감지 불능</h3>
+          <div class="problem-box">
+            <strong><i class="fa-solid fa-circle-xmark red-icon"></i> 문제 상황:</strong>
+            <p>LLM이 문맥을 과장 해석하여 요청 기술 스택 미달 강사를 우수 강사로 오매칭.</p>
+          </div>
+          <div class="solution-box">
+            <strong><i class="fa-solid fa-circle-check green-icon"></i> 해결 방안:</strong>
+            <p>Dual-Agent Cross Validation 도입. 검증 Agent가 원본 증빙과 1:1 팩트 대조.</p>
+          </div>
+        </div>
+
+        <div class="glass-card trouble-card">
+          <div class="trouble-badge yellow">ISSUE 03</div>
+          <h3 style="font-size: 1.05rem; color: #fff;">강사 개인정보(PII) 외부 유출 위험</h3>
+          <div class="problem-box">
+            <strong><i class="fa-solid fa-circle-xmark red-icon"></i> 문제 상황:</strong>
+            <p>LLM API 호출 시 주민번호, 연락처 등 민감 정보가 인프라 외부로 노출될 위험.</p>
+          </div>
+          <div class="solution-box">
+            <strong><i class="fa-solid fa-circle-check green-icon"></i> 해결 방안:</strong>
+            <p>API 전송 전 PII 자동 마스킹 엔진 작동 + DB 컬럼급 AES-256 암호화 처리.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: 11. 유지 관리 비용 -->
+    <section class="slide" id="slide-12" data-title="11. 유지 관리 비용 - Maintenance Cost">
+      <div class="slide-header">
+        <div class="slide-num">11</div>
+        <div>
+          <h2>11. 유지 관리 비용 (Maintenance & Costs)</h2>
+          <p class="subtitle">안정적 고효율 운영을 위한 연간 클라우드 및 API 유지 관리 비용 산정</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-2">
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-coins card-icon gold-icon"></i>
+            <h3>월별 / 연간 운영 예산 세부 항목</h3>
+          </div>
+          <div class="budget-chart-container mt-2">
+            <div>
+              <div class="b-info"><span><i class="fa-brands fa-microsoft cyan-icon"></i> Azure 클라우드 인프라 (App Service, DB)</span><span>월 25만 원</span></div>
+              <div class="progress-bar"><div class="fill cyan" style="width: 55%;"></div></div>
+            </div>
+            <div>
+              <div class="b-info"><span><i class="fa-solid fa-robot green-icon"></i> LLM API 사용료 (1,000건/월 기준)</span><span>월 10만 원</span></div>
+              <div class="progress-bar"><div class="fill green" style="width: 25%;"></div></div>
+            </div>
+            <div>
+              <div class="b-info"><span><i class="fa-solid fa-wrench purple-icon"></i> 보안 패치 & 시스템 정기 점검 예비비</span><span>월 5만 원</span></div>
+              <div class="progress-bar"><div class="fill purple" style="width: 20%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card cost-summary-box">
+          <i class="fa-solid fa-calculator cyan-icon" style="font-size: 2.5rem; margin-bottom: 0.5rem;"></i>
+          <div class="text-sm text-sub">연간 총 예상 유지 관리 비용</div>
+          <div class="gradient-text font-bold mt-1" style="font-size: 2.5rem;">약 420만 원 / 연</div>
+          <p class="text-xs text-sub mt-2" style="line-height: 1.5;">
+            수동 엑셀 서무 인건비 대비 <strong class="cyan-icon">85% 이상의 비용 절감 효과</strong> 달성. 최소한의 자원으로 최상의 매칭 무결점 유지.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: 12. 프로젝트 성과 -->
+    <section class="slide" id="slide-13" data-title="12. 프로젝트 성과 - Results & Impact">
+      <div class="slide-header">
+        <div class="slide-num">12</div>
+        <div>
+          <h2>12. 프로젝트 성과 (Project Results & Impact)</h2>
+          <p class="subtitle">아이코어이앤씨 강사 자동 매칭 플랫폼 구축을 통해 달성한 핵심 성과</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-3">
+        <div class="glass-card text-center p-3">
+          <i class="fa-solid fa-clock-rotate-left cyan-icon" style="font-size: 2.8rem;"></i>
+          <h3 class="mt-2" style="font-size: 1.3rem;">행정시간 70% 단축</h3>
+          <p class="text-sm text-sub mt-2">이력서 수동 검토 및 메일 안내 작업을 자동화하여 처리 시간을 획기적으로 절감</p>
+          <div class="kpi-tag cyan mt-3">생산성 극대화</div>
+        </div>
+
+        <div class="glass-card text-center p-3">
+          <i class="fa-solid fa-bullseye purple-icon" style="font-size: 2.8rem;"></i>
+          <h3 class="mt-2" style="font-size: 1.3rem;">매칭 정확도 98.5%</h3>
+          <p class="text-sm text-sub mt-2">Dual-Agent 원본 교차검증으로 AI 환각 없이 무결점 강사 추천 달성</p>
+          <div class="kpi-tag purple mt-3">신뢰성 확보</div>
+        </div>
+
+        <div class="glass-card text-center p-3">
+          <i class="fa-solid fa-flag-checkered green-icon" style="font-size: 2.8rem;"></i>
+          <h3 class="mt-2" style="font-size: 1.3rem;">100% 기한 준수</h3>
+          <p class="text-sm text-sub mt-2">2026년 7월 31일 사업 기한 내 요구사항을 100% 완벽 충족하여 완수</p>
+          <div class="kpi-tag green mt-3">완벽 납품</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: 13. 프로젝트 회고 -->
+    <section class="slide" id="slide-14" data-title="13. 프로젝트 회고 - Retrospective">
+      <div class="slide-header">
+        <div class="slide-num">13</div>
+        <div>
+          <h2>13. 프로젝트 회고 (Project Retrospective)</h2>
+          <p class="subtitle">프로젝트 완수 소회, 교훈(Lessons Learned) 및 향후 발전 방향</p>
+        </div>
+      </div>
+
+      <div class="slide-body grid-3">
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-thumbs-up card-icon green-icon"></i>
+            <h3>Keep (성공 요인)</h3>
+          </div>
+          <p class="text-sm text-sub mt-2" style="line-height: 1.6;">
+            단순 AI 매칭에 그치지 않고 '원문 대조 검증 Agent'를 독립 배치함으로써 비전공자 담당자도 안심하고 판단할 수 있는 신뢰성을 확보한 점.
+          </p>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fa-solid fa-triangle-exclamation card-icon red-icon"></i>
+            <h3>Problem (아쉬운 점)</h3>
+          </div>
+          <p class="text-sm text-sub mt-2" style="line-height: 1.6;">
+            초기 HWP 이력서의 비표준 표 구조 파싱 시 특수문자 깨짐으로 인해 정제 파이프라인 구축에 다소 시일이 소요되었던 부분.
+          </p>
+        </div>
+
+        <div class="glass-card">
+          <div class="glass-card-header card-header">
+            <i class="fa-solid fa-rocket card-icon cyan-icon"></i>
+            <h3>Try (향후 고도화)</h3>
+          </div>
+          <p class="text-sm text-sub mt-2" style="line-height: 1.6;">
+            향후 OCR 파이프라인 및 다국어 지원을 추가하여 글로벌 강사 풀까지 확장할 수 있는 차세대 매칭 생태계로 발전 제안.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: Q&A 및 엔딩 -->
+    <section class="slide" id="slide-15" data-title="14. Q & A 및 마무리">
+      <div class="ending-container">
+        <div class="glass-card ending-content">
+          <div class="ending-badge">ICORE E&C AI PLATFORM</div>
+          <h1 class="ending-title">'아이코어이앤씨 AI 기반 최적 강사 매칭 솔루션'</h1>
+          <p class="ending-sub">검증형 AI Agent로 완성하는 무결점 매칭 및 행정 자동화</p>
+          
+          <div class="qna-box">
+            <span class="qna-text">Q & A</span>
+            <p style="color: var(--text-secondary); margin-top: 6px;">경청해 주셔서 감사합니다. 질문에 성심껏 답변드리겠습니다.</p>
+          </div>
+
+          <div style="font-size: 0.9rem; color: var(--text-muted);">
+            <span>제안기관 : 강원대학교 3팀</span> | 
+            <span>2026. 07</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Control Footer -->
+  <footer class="bottom-nav">
+    <button class="control-btn" id="prev-slide" title="이전 (←)">
+      <i class="fa-solid fa-arrow-left"></i> 이전
+    </button>
+    
+    <div class="slide-indicator">
+      <span id="current-index">1</span> / <span id="total-slides">15</span>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-bar-fill" id="slide-progress"></div>
+    </div>
+
+    <button class="control-btn primary" id="next-slide" title="다음 (→ / Space)">
+      다음 <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </footer>
+
+  <!-- Slide List Modal -->
+  <div class="modal-overlay" id="grid-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="color: #fff;"><i class="fa-solid fa-list cyan-icon"></i> 슬라이드 전체 목록</h3>
+        <button class="close-btn" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-grid" id="modal-slide-list">
+        <!-- Generated dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
