@@ -230,7 +230,7 @@ npm run build
       <td><strong>강옥일</strong><br/>AWS Architecture / Full-stack<br/>AWS 서버리스 아키텍처 설계, SAM 인프라 구성, Lambda API 구현, Bedrock/Polly/Transcribe 연동, 프론트엔드 음성 대화 흐름 통합</td>
     </tr>
     <tr>
-      <td><strong>이민경</strong><br/>Frontend Engineer / UX Specialist<br/>React Native Expo 기반 시니어 케어 모바일 인터페이스 구축, 시니어 인지 특성에 최적화된 고대비 가독성 디자인 시스템 설계, 보호자 실시간 대시보드 및 인터랙티브 두뇌 훈련 게임 4종 구현</td>
+      <td><strong>이민경</strong><br/>Frontend Developer / UI UX Design<br/>React Native Expo 기반 프론트엔드 모바일 앱 개발, 보호자 대시보드 및 두뇌 훈련 게임 4종 구현</td>
     </tr>
   </tbody>
 </table>
