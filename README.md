@@ -8,11 +8,10 @@
 
 **Frontend**
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-000000?style=for-the-badge&logo=expo&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![React Navigation](https://img.shields.io/badge/React_Navigation-6B52AE?style=for-the-badge&logo=react-navigation&logoColor=white)
 
 **Backend / AI**
 
@@ -38,7 +37,7 @@
 
 ![똑똑똑 AWS 서버리스 아키텍처](docs/assets/ddokddok-architecture.png)
 
-1. 사용자는 React/Vite PWA에 접속하고 Cognito 기반 로그인 또는 회원가입을 수행합니다.
+1. 사용자는 React Native / Expo 크로스플랫폼 앱에 접속하고 서비스 로그인 또는 회원가입을 수행합니다.
 2. 프론트엔드는 API Gateway REST API를 통해 인증, 세션, 대화, 음성 인식, 활동 기록 API를 호출합니다.
 3. 음성 입력은 브라우저가 Transcribe Streaming WebSocket에 직접 연결하도록 Lambda가 presigned URL을 발급합니다.
 4. `/turn` Lambda는 최근 대화, KDSQ 정책, 필요 시 Bedrock Knowledge Base 검색 결과를 구성해 Bedrock을 호출합니다.
@@ -178,7 +177,7 @@ Frontend:
 ```bash
 cd frontend
 npm install
-npm run dev
+npx expo start
 ```
 
 Backend:
@@ -189,7 +188,7 @@ sam build
 sam deploy --profile noin-dev --region ap-northeast-2
 ```
 
-기본 API URL은 [frontend/lib/api.ts](frontend/lib/api.ts)의 `DEFAULT_API_BASE_URL` 또는 `VITE_API_BASE_URL` 환경 변수로 조정합니다.
+기본 API URL은 [frontend/src/services/api.js](frontend/src/services/api.js)의 `DEFAULT_API_BASE_URL` 환경 변수로 조정합니다.
 
 ## Quality Check
 
