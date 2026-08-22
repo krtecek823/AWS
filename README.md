@@ -230,7 +230,7 @@ npm run build
       <td><strong>강옥일</strong><br/>AWS Architecture / Full-stack<br/>AWS 서버리스 아키텍처 설계, SAM 인프라 구성, Lambda API 구현, Bedrock/Polly/Transcribe 연동, 프론트엔드 음성 대화 흐름 통합</td>
     </tr>
     <tr>
-      <td><strong>이민경</strong><br/>UI/UX Design / Frontend Development<br/>시니어 맞춤형 UI/UX 디자인 설계, React Native Expo 프론트엔드 화면 구현 및 대시보드/게임 인터페이스 개발 협업</td>
+      <td><strong>이민경</strong><br/>UI/UX Design / Frontend Development<br/>시니어 맞춤형 UI/UX 디자인 설계, React Native Expo 프론트엔드 화면 구현 및 대시보드/게임 인터페이스 개발</td>
     </tr>
   </tbody>
 </table>
